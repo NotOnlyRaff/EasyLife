@@ -1,16 +1,15 @@
 package com.easylife.repository;
 
 import com.easylife.model.User;
-import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    User findByEmail(String email);
-    User findByEmailAndPassword(String email, String password);
-    List<User> findByName(String name);
-    List<User> findAll();
-    void deleteByEmail(String email);
-    User save(User user);
+    Optional<User> findByFirstName(String firstName);
+    Optional<User> findBySurname(String surname);
+    Optional<User> findByFirstNameAndSurname(String firstName, String surname);
+    void deleteById(Long id);
 
 }

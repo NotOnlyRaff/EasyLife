@@ -1,4 +1,4 @@
-package main.java.com.easylife.easylife.controller;
+package com.easylife.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;

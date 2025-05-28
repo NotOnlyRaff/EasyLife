@@ -1,6 +1,5 @@
 package com.easylife.model;
 import java.time.LocalDate;
-import java.util.List;
 import jakarta.persistence.*;
 
 
@@ -14,22 +13,26 @@ public class Purchase {
     private double price;
     private LocalDate saleDate;
     private String paymentMethod;
+    private String transactionSocial;
     
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-    @ManyToOne
-    @JoinColumn(name = "subscription_id", nullable = true)
-    private Subscription subscription;
-    @ManyToOne
-    @JoinColumn(name = "game_id", nullable = true)
+    
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "game_id")
     private Game game;
 
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "subscription_id")
+    private Subscription subscription;
 
-    public Purchase(double price, LocalDate saleDate, String paymentMethod, User user, Subscription subscription, Game game) {
+
+    public Purchase(double price, LocalDate saleDate, String paymentMethod, String transactionSocial, User user, Subscription subscription, Game game) {
         this.price = price;
         this.saleDate = saleDate;
         this.paymentMethod = paymentMethod;
+        this.transactionSocial = transactionSocial;
         this.user = user;
         this.subscription = subscription;
         this.game = game;
@@ -60,6 +63,12 @@ public class Purchase {
     public void setPaymentMethod(String paymentMethod) {
         this.paymentMethod = paymentMethod;
     }
+    public String getTransactionSocial() {
+        return transactionSocial;
+    }
+    public void setTransactionSocial(String transactionSocial) {
+        this.transactionSocial = transactionSocial;
+    }
     public User getUser() {
         return user;
     }
@@ -78,8 +87,5 @@ public class Purchase {
     public void setGame(Game game) {
         this.game = game;
     }
-    
-
-
 }
 

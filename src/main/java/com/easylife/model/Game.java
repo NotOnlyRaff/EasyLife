@@ -1,6 +1,7 @@
 package com.easylife.model;
 import java.time.LocalDate;
 import java.util.List;
+
 import jakarta.persistence.*;
 
 
@@ -14,16 +15,23 @@ public class Game {
     @Column(unique = true, nullable = false)
     private String accountEmail;
     private String accountPassword;
-    private String gameName;
     @Column(unique = true, nullable = false)
     private String gameProfileId;
+    private String gameName;
     private Double price;
     private LocalDate saleDate;
-    private String description;
+    private String description;                  
     private Boolean isPS5PrimaryAvailable;
     private Boolean isPS5SecondaryAvailable;
     private Boolean isPS4PrimaryAvailable;
     private Boolean isPS4SecondaryAvailable;
+
+    @ManyToOne
+    @JoinColumn(name = "account_id", nullable = false)
+    private Account account;
+
+    @OneToMany(mappedBy = "game")
+    private List<Purchase> purchases;
 
     public Game(String gameName, String accountEmail, String accountPassword, LocalDate saleDate, Boolean isPS5PrimaryAvailable, Boolean isPS5SecondaryAvailable, Boolean isPS4PrimaryAvailable, Boolean isPS4SecondaryAvailable) {
         this.gameName = gameName;
@@ -109,5 +117,16 @@ public class Game {
     public void setId(Long id) { 
         this.id = id;
     }
-
+    public Account getAccount() {
+        return account;
+    }
+    public void setAccount(Account account) {
+        this.account = account;
+    }
+    public List<Purchase> getPurchases() {
+        return purchases;
+    }
+    public void setPurchases(List<Purchase> purchases) {
+        this.purchases = purchases;
+    }
 }
