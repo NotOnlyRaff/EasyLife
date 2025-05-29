@@ -1,6 +1,5 @@
 package com.easylife.repository;
 
-import com.easylife.model.Account;
 import com.easylife.model.Game;
 
 import java.util.List;

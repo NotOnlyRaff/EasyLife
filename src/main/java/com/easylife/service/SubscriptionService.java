@@ -12,10 +12,12 @@ import java.util.Optional;
 public class SubscriptionService {
 
     private final SubscriptionRepository subscriptionRepository;
+    private final AccountService accountService;
 
     @Autowired
-    public SubscriptionService(SubscriptionRepository subscriptionRepository) {
+    public SubscriptionService(SubscriptionRepository subscriptionRepository, AccountService accountService) {
         this.subscriptionRepository = subscriptionRepository;
+        this.accountService = accountService;
     }
 
     public Subscription createSubscription(Subscription subscription) {
@@ -38,6 +40,9 @@ public class SubscriptionService {
     }
     public List<Subscription> getByAccount(Account account) {
         return subscriptionRepository.findByAccount(account);
+    }
+    public Optional<Account> getByAccount(String accountEmail) {
+        return accountService.getByEmail(accountEmail); 
     }
     public void deleteSubscriptionByEmail(String email) {
         subscriptionRepository.deleteByEmail(email);

@@ -3,9 +3,9 @@ package com.easylife.service;
 import com.easylife.model.Game;
 import com.easylife.model.Purchase;
 import com.easylife.model.Subscription;
-import com.easylife.model.User;
+import com.easylife.model.Users;
 import com.easylife.repository.PurchaseRepository;
-import com.easylife.repository.UserRepository;
+import com.easylife.repository.UsersRepository;
 import com.easylife.repository.GameRepository;
 import com.easylife.repository.SubscriptionRepository;
 
@@ -18,13 +18,13 @@ import java.util.Optional;
 public class PurchaseService {
 
     private final PurchaseRepository purchaseRepository;
-    private final UserRepository userRepository;
+    private final UsersRepository userRepository;
     private final GameRepository gameRepository;
     private final SubscriptionRepository subscriptionRepository;
 
     @Autowired
     public PurchaseService(PurchaseRepository purchaseRepository,
-                           UserRepository userRepository,
+                           UsersRepository userRepository,
                            GameRepository gameRepository,
                            SubscriptionRepository subscriptionRepository) {
         this.purchaseRepository = purchaseRepository;
@@ -35,7 +35,7 @@ public class PurchaseService {
 
     public Purchase createPurchase(Long userId, Long gameId, Long subscriptionId,
                                     Double price, String paymentMethod, String transactionId) {
-        Optional<User> user = userRepository.findById(userId);
+        Optional<Users> user = userRepository.findById(userId);
         if (user.isEmpty()) throw new IllegalArgumentException("Utente non trovato");
 
         Game game = gameId != null ? gameRepository.findById(gameId).orElse(null) : null;
@@ -55,7 +55,7 @@ public class PurchaseService {
         return purchaseRepository.findAll();
     }
 
-    public List<Purchase> getPurchasesByUser(User user) {
+    public List<Purchase> getPurchasesByUser(Users user) {
         return purchaseRepository.findByUser(user);
     }
     public List<Purchase> getPurchasesByGame(Game game) {
@@ -79,10 +79,10 @@ public class PurchaseService {
     public void deletePurchaseById(Long idTransaction) {
         purchaseRepository.deleteByIdTransaction(idTransaction);
     }
-    public List<Purchase> getPurchasesByUserAndGame(User user, Game game) {
+    public List<Purchase> getPurchasesByUserAndGame(Users user, Game game) {
         return purchaseRepository.findByUserAndGame(user, game);
     }
-    public List<Purchase> getPurchasesByUserAndSubscription(User user, Subscription subscription) {
+    public List<Purchase> getPurchasesByUserAndSubscription(Users user, Subscription subscription) {
         return purchaseRepository.findByUserAndSubscription(user, subscription);
     }
     public Optional<Purchase> updatePurchase(Long idTransaction, Purchase purchase) {

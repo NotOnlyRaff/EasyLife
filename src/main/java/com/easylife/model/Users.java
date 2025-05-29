@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
-public class User {
+public class Users {
 
     @Id
     @GeneratedValue
@@ -16,11 +16,11 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Purchase> purchases;
 
-    public User(String firstName, String surname) {
+    public Users(String firstName, String surname) {
         this.firstName = firstName;
         this.surname = surname;
     }
-    public User() {
+    public Users() {
     }
     public Long getId() {
         return id;

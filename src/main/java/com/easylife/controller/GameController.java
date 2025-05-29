@@ -1,5 +1,6 @@
 package com.easylife.controller;
 
+import com.easylife.model.Account;
 import com.easylife.model.Game;
 import com.easylife.service.AccountService;
 import com.easylife.service.GameService;
@@ -81,8 +82,8 @@ public class GameController {
         return gameService.getByPS4SecondaryAvailable(available);
     }
     @GetMapping("/account/{accountEmail}")
-    public List<Game> getGamesByAccount(@PathVariable String accountEmail) {
-        return gameService.getByAccount(accountEmail)
+    public List<Account> getGamesByAccount(@PathVariable String accountEmail) {
+        return accountService.getByEmail(accountEmail)
                 .map(List::of)
                 .orElseGet(List::of);
     }
@@ -96,7 +97,6 @@ public class GameController {
             return ResponseEntity.notFound().build();
         }
     }
-
     @DeleteMapping("/game-profile/{gameProfileId}")
     public ResponseEntity<Void> deleteGameByGameProfileId(@PathVariable String gameProfileId) {
         Optional<Game> game = gameService.getByGameProfileId(gameProfileId);

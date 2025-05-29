@@ -3,6 +3,9 @@ package com.easylife.service;
 import com.easylife.model.Account;
 import com.easylife.model.Game;
 import com.easylife.repository.GameRepository;
+
+import jakarta.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
@@ -66,16 +69,17 @@ public class GameService {
     public List<Game> getByPS4SecondaryAvailable(Boolean available) {
         return gameRepository.findByIsPS4SecondaryAvailable(available);
     }
-    public Optional<Game> getByAccount(String accountEmail) {
-        return gameRepository.findByAccountEmail(accountEmail); 
+    public Optional<Account> getByAccount(String accountEmail) {
+        return accountService.getByEmail(accountEmail); 
     }
-    
+    @Transactional
     public void deleteGameByAccountEmail(String accountEmail) {
         gameRepository.deleteByAccountEmail(accountEmail);
     }
     public void deleteGameByGameProfileId(String gameProfileId) {
         gameRepository.deleteByGameProfileId(gameProfileId);
     }
+    @Transactional
     public Optional<Game> updateGameByAccountEmail(String accountEmail, Game game) {
         Optional<Game> existingGame = gameRepository.findByAccountEmail(accountEmail);
         if (existingGame.isPresent()) {
@@ -92,6 +96,7 @@ public class GameService {
         }
         return Optional.empty();
     }
+    @Transactional
     public Optional<Game> updateGameByGameProfileId(String gameProfileId, Game game) {
         Optional<Game> existingGame = gameRepository.findByGameProfileId(gameProfileId);
         if (existingGame.isPresent()) {

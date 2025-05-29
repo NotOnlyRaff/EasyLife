@@ -1,7 +1,7 @@
 package com.easylife.controller;
 
-import com.easylife.model.User;
-import com.easylife.service.UserService;
+import com.easylife.model.Users;
+import com.easylife.service.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,52 +10,52 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
-public class UserController {
+public class UsersController {
 
-    private final UserService userService;
+    private final UsersService userService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UsersController(UsersService userService) {
         this.userService = userService;
     }
 
     @PostMapping
-    public ResponseEntity<User> create(@RequestBody User user) {
+    public ResponseEntity<Users> create(@RequestBody Users user) {
         return ResponseEntity.ok(userService.create(user));
     }
 
     @GetMapping
-    public List<User> getAll() {
+    public List<Users> getAll() {
         return userService.getAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getById(@PathVariable Long id) {
+    public ResponseEntity<Users> getById(@PathVariable Long id) {
         return userService.getById(id)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping("/firstname/{firstName}")
-    public ResponseEntity<User> getByFirstName(@PathVariable String firstName) {
+    public ResponseEntity<Users> getByFirstName(@PathVariable String firstName) {
         return userService.getByFirstName(firstName)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
     @GetMapping("/surname/{surname}")
-    public ResponseEntity<User> getBySurname(@PathVariable String surname) {
+    public ResponseEntity<Users> getBySurname(@PathVariable String surname) {
         return userService.getBySurname(surname)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
     @GetMapping("/fullname/{firstName}/{surname}")
-    public ResponseEntity<User> getByFullName(@PathVariable String firstName, @PathVariable String surname) {
+    public ResponseEntity<Users> getByFullName(@PathVariable String firstName, @PathVariable String surname) {
         return userService.getByFirstNameAndSurname(firstName, surname)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
     @PutMapping("/{id}")
-    public ResponseEntity<User> update(@PathVariable Long id, @RequestBody User updated) {
+    public ResponseEntity<Users> update(@PathVariable Long id, @RequestBody Users updated) {
         return userService.update(id, updated)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());

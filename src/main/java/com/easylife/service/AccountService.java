@@ -2,6 +2,9 @@ package com.easylife.service;
 
 import com.easylife.model.Account;
 import com.easylife.repository.AccountRepository;
+
+import jakarta.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,12 +43,14 @@ public class AccountService {
     public Optional<Account> getByDescription(String description) {
         return accountRepository.findByDescription(description);
     }
+    @Transactional
     public void deleteByEmail(String email) {
         accountRepository.deleteByEmail(email);
     }
     public void delete(Long id) {
         accountRepository.deleteById(id);
     }
+    @Transactional
     public Optional<Account> update(Long id, Account updated) {
         return accountRepository.findById(id).map(existing -> {
             existing.setEmail(updated.getEmail());
@@ -55,6 +60,7 @@ public class AccountService {
             return accountRepository.save(existing);
         });
     }
+    @Transactional
     public Optional<Account> updateByEmail(String email, Account updated) {
         return accountRepository.findByEmail(email).map(existing -> {
             existing.setEmail(updated.getEmail());

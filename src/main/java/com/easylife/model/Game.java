@@ -27,13 +27,16 @@ public class Game {
     private Boolean isPS4SecondaryAvailable;
 
     @ManyToOne
-    @JoinColumn(name = "account_id", nullable = false)
+    @JoinColumn(name = "account_id")
     private Account account;
 
     @OneToMany(mappedBy = "game")
     private List<Purchase> purchases;
 
-    public Game(String gameName, String accountEmail, String accountPassword, LocalDate saleDate, Boolean isPS5PrimaryAvailable, Boolean isPS5SecondaryAvailable, Boolean isPS4PrimaryAvailable, Boolean isPS4SecondaryAvailable) {
+    public Game(String gameName, String accountEmail, String accountPassword, LocalDate saleDate,
+                Boolean isPS5PrimaryAvailable, Boolean isPS5SecondaryAvailable,
+                Boolean isPS4PrimaryAvailable, Boolean isPS4SecondaryAvailable,
+                Double price, String description, String gameProfileId) {
         this.gameName = gameName;
         this.accountEmail = accountEmail;
         this.accountPassword = accountPassword;
@@ -42,6 +45,9 @@ public class Game {
         this.isPS5SecondaryAvailable = isPS5SecondaryAvailable;
         this.isPS4PrimaryAvailable = isPS4PrimaryAvailable;
         this.isPS4SecondaryAvailable = isPS4SecondaryAvailable;
+        this.price = price;
+        this.description = description;
+        this.gameProfileId = gameProfileId;
     }
     public Game() {
     }

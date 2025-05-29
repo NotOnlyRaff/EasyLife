@@ -16,8 +16,8 @@ public class Purchase {
     private String transactionSocial;
     
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "users_id")
+    private Users user;
     
     @ManyToOne(optional = true)
     @JoinColumn(name = "game_id")
@@ -28,7 +28,7 @@ public class Purchase {
     private Subscription subscription;
 
 
-    public Purchase(double price, LocalDate saleDate, String paymentMethod, String transactionSocial, User user, Subscription subscription, Game game) {
+    public Purchase(double price, LocalDate saleDate, String paymentMethod, String transactionSocial, Users user, Subscription subscription, Game game) {
         this.price = price;
         this.saleDate = saleDate;
         this.paymentMethod = paymentMethod;
@@ -69,10 +69,10 @@ public class Purchase {
     public void setTransactionSocial(String transactionSocial) {
         this.transactionSocial = transactionSocial;
     }
-    public User getUser() {
+    public Users getUser() {
         return user;
     }
-    public void setUser(User user) {
+    public void setUser(Users user) {
         this.user = user;
     }
     public Subscription getSubscription() {
