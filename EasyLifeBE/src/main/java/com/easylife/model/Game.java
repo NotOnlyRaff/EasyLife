@@ -13,9 +13,6 @@ public class Game {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(unique = true, nullable = false)
-    private String accountEmail;
-    private String accountPassword;
-    @Column(unique = true, nullable = false)
     private String gameProfileId;
     private String gameName;
     private Double price;
