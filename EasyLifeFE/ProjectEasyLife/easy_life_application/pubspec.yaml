@@ -24,6 +24,7 @@ dependencies:
   retrofit: ^4.4.2
   google_fonts: ^6.2.1
   animated_text_kit: ^4.2.2
+  http: ^0.13.3    # per fare richieste HTTP
 
 dev_dependencies:
   flutter_test:

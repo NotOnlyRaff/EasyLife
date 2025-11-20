@@ -1,11 +1,10 @@
 package com.easylife.model;
 import java.time.LocalDate;
-import java.util.List;
 
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "subsctiptions")
+@Table(name = "subscriptions")
 public class Subscription {
     
     @Id
@@ -26,9 +25,6 @@ public class Subscription {
     @ManyToOne
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
-
-    @OneToMany(mappedBy = "subscription")
-    private List<Purchase> purchases;
 
     public Subscription(String subscriptionType, double price, String nation, String vpnUsed,
                         LocalDate saleDate, LocalDate purchaseDate, LocalDate activationDate, LocalDate expirationDate,
@@ -122,11 +118,5 @@ public class Subscription {
     }
     public void setAccount(Account account) {
         this.account = account;
-    }
-    public List<Purchase> getPurchases() {
-        return purchases;
-    }
-    public void setPurchases(List<Purchase> purchases) {
-        this.purchases = purchases;
     }
 }

@@ -1,5 +1,4 @@
 import 'package:easy_life_application/core/theme/theme.dart';
-import 'package:easy_life_application/features/auth/view/pages/home_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
