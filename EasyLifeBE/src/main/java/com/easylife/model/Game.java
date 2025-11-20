@@ -1,9 +1,6 @@
 package com.easylife.model;
 import java.time.LocalDate;
-import java.util.List;
-
 import jakarta.persistence.*;
-
 
 @Entity
 @Table(name = "games")
@@ -12,11 +9,16 @@ public class Game {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String gameName;
     @Column(unique = true, nullable = false)
     private String gameProfileId;
-    private String gameName;
     private Double price;
+    private Double salePrice;
+    private Double cost;
+    private String nation;
     private LocalDate saleDate;
+    private LocalDate purchaseDate;
+    private String orderNumber;
     private String description;                  
     private Boolean isPS5PrimaryAvailable;
     private Boolean isPS5SecondaryAvailable;
@@ -27,16 +29,11 @@ public class Game {
     @JoinColumn(name = "account_id")
     private Account account;
 
-    @OneToMany(mappedBy = "game")
-    private List<Purchase> purchases;
-
     public Game(String gameName, String accountEmail, String accountPassword, LocalDate saleDate,
                 Boolean isPS5PrimaryAvailable, Boolean isPS5SecondaryAvailable,
                 Boolean isPS4PrimaryAvailable, Boolean isPS4SecondaryAvailable,
                 Double price, String description, String gameProfileId) {
         this.gameName = gameName;
-        this.accountEmail = accountEmail;
-        this.accountPassword = accountPassword;
         this.saleDate = saleDate;
         this.isPS5PrimaryAvailable = isPS5PrimaryAvailable;
         this.isPS5SecondaryAvailable = isPS5SecondaryAvailable;
@@ -48,29 +45,71 @@ public class Game {
     }
     public Game() {
     }
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
     public String getGameName() {
         return gameName;
     }
     public void setGameName(String gameName) {
         this.gameName = gameName;
     }
-    public String getAccountEmail() {
-        return accountEmail;
+    public String getGameProfileId() {
+        return gameProfileId;
     }
-    public void setAccountEmail(String accountEmail) {
-        this.accountEmail = accountEmail;
+    public void setGameProfileId(String gameProfileId) {
+        this.gameProfileId = gameProfileId;
     }
-    public String getAccountPassword() {
-        return accountPassword;
+    public Double getPrice() {
+        return price;
     }
-    public void setAccountPassword(String accountPassword) {
-        this.accountPassword = accountPassword;
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+    public Double getSalePrice() {
+        return salePrice;
+    }
+    public void setSalePrice(Double salePrice) {
+        this.salePrice = salePrice;
+    }
+    public Double getCost() {
+        return cost;
+    }
+    public void setCost(Double cost) {
+        this.cost = cost;
+    }
+    public String getNation() {
+        return nation;
+    }
+    public void setNation(String nation) {
+        this.nation = nation;
     }
     public LocalDate getSaleDate() {
         return saleDate;
     }
     public void setSaleDate(LocalDate saleDate) {
         this.saleDate = saleDate;
+    }
+    public LocalDate getPurchaseDate() {
+        return purchaseDate;
+    }
+    public void setPurchaseDate(LocalDate purchaseDate) {
+        this.purchaseDate = purchaseDate;
+    }
+    public String getOrderNumber() {
+        return orderNumber;
+    }
+    public void setOrderNumber(String orderNumber) {
+        this.orderNumber = orderNumber;
+    }
+    public String getDescription() {
+        return description;
+    }
+    public void setDescription(String description) {
+        this.description = description;
     }
     public Boolean getIsPS5PrimaryAvailable() {
         return isPS5PrimaryAvailable;
@@ -96,40 +135,10 @@ public class Game {
     public void setIsPS4SecondaryAvailable(Boolean isPS4SecondaryAvailable) {
         this.isPS4SecondaryAvailable = isPS4SecondaryAvailable;
     }
-    public Double getPrice() {
-        return price;
-    } 
-    public void setPrice(Double price) {
-        this.price = price;
-    }
-    public String getDescription() {
-        return description;
-    }
-    public void setDescription(String description) { 
-        this.description = description; 
-    }
-    public String getGameProfileId() { 
-        return gameProfileId; 
-    }
-    public void setGameProfileId(String gameProfileId) { 
-        this.gameProfileId = gameProfileId; 
-    }
-    public Long getId() { 
-        return id; 
-    }
-    public void setId(Long id) { 
-        this.id = id;
-    }
     public Account getAccount() {
         return account;
     }
     public void setAccount(Account account) {
         this.account = account;
-    }
-    public List<Purchase> getPurchases() {
-        return purchases;
-    }
-    public void setPurchases(List<Purchase> purchases) {
-        this.purchases = purchases;
     }
 }

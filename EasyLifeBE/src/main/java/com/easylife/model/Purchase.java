@@ -9,65 +9,39 @@ public class Purchase {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idTransaction;
-    private double price;
-    private LocalDate saleDate;
-    private String paymentMethod;
-    private String transactionSocial;
-    
+    private Long id;
     @ManyToOne
-    @JoinColumn(name = "users_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private Users user;
-    
-    @ManyToOne(optional = true)
-    @JoinColumn(name = "game_id")
-    private Game game;
-
-    @ManyToOne(optional = true)
-    @JoinColumn(name = "subscription_id")
-    private Subscription subscription;
-
-
-    public Purchase(double price, LocalDate saleDate, String paymentMethod, String transactionSocial, Users user, Subscription subscription, Game game) {
-        this.price = price;
-        this.saleDate = saleDate;
-        this.paymentMethod = paymentMethod;
-        this.transactionSocial = transactionSocial;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private PurchaseType purchaseType; // FULL o RENTAL
+    private double price;
+    private LocalDate purchaseDate;
+    private LocalDate startDate;
+    private LocalDate expirationDate;
+    private String paymentMethod;
+    @Enumerated(EnumType.STRING)
+    private PurchaseStatus purchaseStatus; // COMPLETED, PENDING, CANCELLED
+  
+    public Purchase(Users user, PurchaseType purchaseType, double price, LocalDate purchaseDate,
+                    LocalDate startDate, LocalDate expirationDate, String paymentMethod, PurchaseStatus purchaseStatus) {
         this.user = user;
-        this.subscription = subscription;
-        this.game = game;
+        this.purchaseType = purchaseType;
+        this.price = price;
+        this.purchaseDate = purchaseDate;
+        this.startDate = startDate;
+        this.expirationDate = expirationDate;
+        this.paymentMethod = paymentMethod;
+        this.purchaseStatus = purchaseStatus;
     }
     public Purchase() {
     }
-    public Long getIdTransaction() {
-        return idTransaction;
+    public Long getId() {
+        return id;
     }
-    public void setIdTransaction(Long idTransaction) {
-        this.idTransaction = idTransaction;
-    }
-    public double getPrice() {
-        return price;
-    }
-    public void setPrice(double price) {
-        this.price = price;
-    }
-    public LocalDate getSaleDate() {
-        return saleDate;
-    }
-    public void setSaleDate(LocalDate saleDate) {
-        this.saleDate = saleDate;
-    }
-    public String getPaymentMethod() {
-        return paymentMethod;
-    }
-    public void setPaymentMethod(String paymentMethod) {
-        this.paymentMethod = paymentMethod;
-    }
-    public String getTransactionSocial() {
-        return transactionSocial;
-    }
-    public void setTransactionSocial(String transactionSocial) {
-        this.transactionSocial = transactionSocial;
+    public void setId(Long id) {
+        this.id = id;
     }
     public Users getUser() {
         return user;
@@ -75,17 +49,47 @@ public class Purchase {
     public void setUser(Users user) {
         this.user = user;
     }
-    public Subscription getSubscription() {
-        return subscription;
+    public PurchaseType getPurchaseType() {
+        return purchaseType;
     }
-    public void setSubscription(Subscription subscription) {
-        this.subscription = subscription;
+    public void setPurchaseType(PurchaseType purchaseType) {
+        this.purchaseType = purchaseType;
     }
-    public Game getGame() {
-        return game;
+    public double getPrice() {
+        return price;
     }
-    public void setGame(Game game) {
-        this.game = game;
+    public void setPrice(double price) {
+        this.price = price;
+    }
+    public LocalDate getPurchaseDate() {
+        return purchaseDate;
+    }
+    public void setPurchaseDate(LocalDate purchaseDate) {
+        this.purchaseDate = purchaseDate;
+    }
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+    public LocalDate getExpirationDate() {
+        return expirationDate;
+    }
+    public void setExpirationDate(LocalDate expirationDate) {
+        this.expirationDate = expirationDate;
+    }
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+    public PurchaseStatus getPurchaseStatus() {
+        return purchaseStatus;
+    }
+    public void setPurchaseStatus(PurchaseStatus purchaseStatus) {
+        this.purchaseStatus = purchaseStatus;
     }
 }
 

@@ -1,24 +1,28 @@
 package com.easylife.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import jakarta.persistence.*;
 
 @Entity
 public class Account {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(unique = true, nullable = false)
     private String email;
-    private LocalDate createdAt;
     private String password;
+    private LocalDate createdAt;
+    private String nation;
     private String description;
     
     @OneToMany(mappedBy = "account")
-    private List<Game> games;
+    private List<Game> games = new ArrayList<>();
     @OneToMany(mappedBy = "account")
-    private List<Subscription> subscriptions;
+    private List<Subscription> subscriptions = new ArrayList<>();
+    @OneToMany(mappedBy = "account")
+    private List<Purchase> purchases = new ArrayList<>();
 
     public Account(String email, String password, String description) {
         this.email = email;
@@ -47,6 +51,18 @@ public class Account {
     public void setPassword(String password) {
         this.password = password;
     }
+    public LocalDate getCreatedAt() {
+        return createdAt;
+    }
+    public void setCreatedAt(LocalDate createdAt) {
+        this.createdAt = createdAt;
+    }
+    public String getNation() {
+        return nation;
+    }
+    public void setNation(String nation) {
+        this.nation = nation;
+    }
     public String getDescription() {
         return description;
     }
@@ -65,10 +81,10 @@ public class Account {
     public void setSubscriptions(List<Subscription> subscriptions) {
         this.subscriptions = subscriptions;
     }
-    public LocalDate getCreatedAt() {
-        return createdAt;
+    public List<Purchase> getPurchases() {
+        return purchases;
     }
-    public void setCreatedAt(LocalDate createdAt) {
-        this.createdAt = createdAt;
+    public void setPurchases(List<Purchase> purchases) {
+        this.purchases = purchases;
     }
 }

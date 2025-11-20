@@ -11,16 +11,17 @@ public class Subscription {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String subscriptionName;
-    @Column(unique = true, nullable = false)
-    private String email;
-    private String password;
-    private double price;
     private String subscriptionType;
-    private int freeAccountsNumber;
+    private double price;
+    private Double salePrice;
+    private Double cost;
+    private String nation;
+    private String vpnUsed;
+    private LocalDate saleDate;
+    private LocalDate purchaseDate;
     private LocalDate activationDate;
     private LocalDate expirationDate;
-    private boolean isActive;
+    private int freeProfileNumber;
 
     @ManyToOne
     @JoinColumn(name = "account_id", nullable = false)
@@ -29,40 +30,74 @@ public class Subscription {
     @OneToMany(mappedBy = "subscription")
     private List<Purchase> purchases;
 
-    public Subscription(String subscriptionName, String email, String password, String subscriptionType, LocalDate activationDate, LocalDate expirationDate, Boolean isActive) {
-        this.subscriptionName = subscriptionName;
-        this.email = email;
-        this.password = password;
+    public Subscription(String subscriptionType, double price, String nation, String vpnUsed,
+                        LocalDate saleDate, LocalDate purchaseDate, LocalDate activationDate, LocalDate expirationDate,
+                        int freeProfileNumber) {
         this.subscriptionType = subscriptionType;
+        this.price = price;
+        this.nation = nation;
+        this.vpnUsed = vpnUsed;
+        this.saleDate = saleDate;
+        this.purchaseDate = purchaseDate;
         this.activationDate = activationDate;
         this.expirationDate = expirationDate;
-        this.isActive = isActive;
+        this.freeProfileNumber = freeProfileNumber;
     }
     public Subscription() {
     }
-    public String getSubscriptionName() {
-        return subscriptionName;
+    public Long getId() {
+        return id;
     }
-    public void setSubscriptionName(String subscriptionName) {
-        this.subscriptionName = subscriptionName;
-    }
-    public String getEmail() {
-        return email;
-    }
-    public void setEmail(String email) {
-        this.email = email;
-    }
-    public String getPassword() {
-        return password;
-    }
-    public void setPassword(String password) {
-        this.password = password;
+    public void setId(Long id) {
+        this.id = id;
     }
     public String getSubscriptionType() {
         return subscriptionType;
     }
     public void setSubscriptionType(String subscriptionType) {
         this.subscriptionType = subscriptionType;
+    }
+    public double getPrice() {
+        return price;
+    }
+    public void setPrice(double price) {
+        this.price = price;
+    }
+    public Double getSalePrice() {
+        return salePrice;
+    }
+    public void setSalePrice(Double salePrice) {
+        this.salePrice = salePrice;
+    }
+    public Double getCost() {
+        return cost;
+    }
+    public void setCost(Double cost) {
+        this.cost = cost;
+    }
+    public String getNation() {
+        return nation;
+    }
+    public void setNation(String nation) {
+        this.nation = nation;
+    }
+    public String getVpnUsed() {
+        return vpnUsed;
+    }
+    public void setVpnUsed(String vpnUsed) {
+        this.vpnUsed = vpnUsed;
+    }
+    public LocalDate getSaleDate() {
+        return saleDate;
+    }
+    public void setSaleDate(LocalDate saleDate) {
+        this.saleDate = saleDate;
+    }
+    public LocalDate getPurchaseDate() {
+        return purchaseDate;
+    }
+    public void setPurchaseDate(LocalDate purchaseDate) {
+        this.purchaseDate = purchaseDate;
     }
     public LocalDate getActivationDate() {
         return activationDate;
@@ -76,29 +111,11 @@ public class Subscription {
     public void setExpirationDate(LocalDate expirationDate) {
         this.expirationDate = expirationDate;
     }
-    public Boolean getIsActive() {
-        return isActive;
+    public int getFreeProfileNumber() {
+        return freeProfileNumber;
     }
-    public void setIsActive(Boolean isActive) {
-        this.isActive = isActive;
-    }
-    public double getPrice() {
-        return price;
-    }
-    public void setPrice(double price) {
-        this.price = price;
-    }
-    public int getFreeAccountsNumber() {
-        return freeAccountsNumber;
-    }
-    public void setFreeAccountsNumber(int freeAccountsNumber) {
-        this.freeAccountsNumber = freeAccountsNumber;
-    }
-    public Long getId() {
-        return id;
-    }
-    public void setId(Long id) {
-        this.id = id;
+    public void setFreeProfileNumber(int freeProfileNumber) {
+        this.freeProfileNumber = freeProfileNumber;
     }
     public Account getAccount() {
         return account;
@@ -112,5 +129,4 @@ public class Subscription {
     public void setPurchases(List<Purchase> purchases) {
         this.purchases = purchases;
     }
-    
 }

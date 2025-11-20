@@ -1,7 +1,6 @@
 package com.easylife.controller;
 
 import com.easylife.model.Account;
-import com.easylife.model.Game;
 import com.easylife.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -9,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 @RestController
 @RequestMapping("/api/accounts")
 public class AccountController {

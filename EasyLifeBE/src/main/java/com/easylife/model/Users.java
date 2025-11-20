@@ -1,24 +1,28 @@
 package com.easylife.model;
 
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 public class Users {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String firstName;
     private String surname;
+    private int purchaseNumber;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Purchase> purchases;
+    private List<Purchase> purchases = new ArrayList<>();
 
-    public Users(String firstName, String surname) {
+    public Users(String firstName, String surname, int purchaseNumber) {
         this.firstName = firstName;
         this.surname = surname;
+        this.purchaseNumber = purchaseNumber;
     }
     public Users() {
     }
@@ -39,6 +43,12 @@ public class Users {
     }
     public void setSurname(String surname) {
         this.surname = surname;
+    }  
+    public int getPurchaseNumber() {
+        return purchaseNumber;
+    }
+    public void setPurchaseNumber(int purchaseNumber) {
+        this.purchaseNumber = purchaseNumber;
     }
     public List<Purchase> getPurchases() {
         return purchases;

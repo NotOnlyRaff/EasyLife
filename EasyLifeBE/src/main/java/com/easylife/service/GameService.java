@@ -102,8 +102,6 @@ public class GameService {
         if (existingGame.isPresent()) {
             Game updatedGame = existingGame.get();
             updatedGame.setGameName(game.getGameName());
-            updatedGame.setAccountEmail(game.getAccountEmail());
-            updatedGame.setAccountPassword(game.getAccountPassword());
             updatedGame.setSaleDate(game.getSaleDate());
             updatedGame.setPrice(game.getPrice());
             updatedGame.setDescription(game.getDescription());
