@@ -1,74 +1,163 @@
 package com.easylife.service;
 
+import com.easylife.config.exception.BusinessException;
+import com.easylife.config.exception.ResourceNotFoundException;
 import com.easylife.model.Account;
+import com.easylife.model.AccountStatus;
+import com.easylife.model.Game;
+import com.easylife.model.Purchase;
+import com.easylife.model.Subscription;
 import com.easylife.repository.AccountRepository;
 
-import jakarta.transaction.Transactional;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
+
 
 @Service
+@Transactional
 public class AccountService {
 
     private final AccountRepository accountRepository;
 
-    @Autowired
     public AccountService(AccountRepository accountRepository) {
         this.accountRepository = accountRepository;
     }
 
-    public Account create(Account account) {
-        return accountRepository.save(account);
-    }
-    public List<Account> getAll() {
+    /* =========================
+       METODI DI LETTURA
+       ========================= */
+
+    @Transactional(readOnly = true)
+    public List<Account> getAllAccounts() {
         return accountRepository.findAll();
     }
-    public Optional<Account> getByEmail(String email) {
-        return accountRepository.findByEmail(email);
+
+    @Transactional(readOnly = true)
+    public Account getAccountById(Long id) {
+        return accountRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Account not found with id: " + id));
     }
-    public Optional<Account> getByEmailAndPassword(String email, String password) {
-        return accountRepository.findByEmailAndPassword(email, password);
+
+    @Transactional(readOnly = true)
+    public Account getAccountByEmail(String email) {
+        return accountRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Account not found with email: " + email));
     }
-    public Optional<Account> getById(Long id) {
-        return accountRepository.findById(id);
+     @Transactional(readOnly = true)
+    public List<Game> getGamesForAccount(Long accountId) {
+        Account account = getAccountById(accountId);
+        // grazie a @Transactional(readOnly = true), la sessione JPA è aperta
+        // e la lazy collection può inizializzarsi
+        return account.getGames();
     }
-    public List<Account> getByCreatedAt(LocalDate createdAt) {
-        return accountRepository.findByCreatedAt(createdAt);
+
+    @Transactional(readOnly = true)
+    public List<Subscription> getSubscriptionsForAccount(Long accountId) {
+        Account account = getAccountById(accountId);
+        return account.getSubscriptions();
     }
-    public Optional<Account> getByDescription(String description) {
-        return accountRepository.findByDescription(description);
+
+    @Transactional(readOnly = true)
+    public List<Purchase> getPurchasesForAccount(Long accountId) {
+        Account account = getAccountById(accountId);
+        return account.getPurchases();
     }
-    @Transactional
-    public void deleteByEmail(String email) {
-        accountRepository.deleteByEmail(email);
+
+    /**
+     * Utility usabile dagli altri service (es. GameService):
+     * se l'account non esiste lancia eccezione, senza Optional in giro.
+     */
+    @Transactional(readOnly = true)
+    public Account requireAccountById(Long id) {
+        return getAccountById(id);
     }
-    public void delete(Long id) {
-        accountRepository.deleteById(id);
+
+    /* =========================
+       CREAZIONE / UPDATE
+       ========================= */
+
+    public Account createAccount(Account account) {
+        // email deve essere unica
+        accountRepository.findByEmail(account.getEmail())
+                .ifPresent(existing -> {
+                    throw new BusinessException("Account with email '" + account.getEmail() + "' already exists");
+                });
+
+        // default createdAt se non settato
+        if (account.getCreatedAt() == null) {
+            account.setCreatedAt(LocalDate.now());
+        }
+        if (account.getStatus() == null) {
+            account.setStatus(AccountStatus.PENDING);
+        }
+
+        // TODO: in futuro: cifrare password prima del salvataggio
+        return accountRepository.save(account);
     }
-    @Transactional
-    public Optional<Account> update(Long id, Account updated) {
-        return accountRepository.findById(id).map(existing -> {
-            existing.setEmail(updated.getEmail());
-            existing.setPassword(updated.getPassword());
-            existing.setDescription(updated.getDescription());
-            existing.setCreatedAt(updated.getCreatedAt());
-            return accountRepository.save(existing);
-        });
+
+    public Account updateAccount(Long id, Account updatedAccount) {
+        Account existing = getAccountById(id);
+
+        // Gestione email: qui scelgo di NON permettere il cambio email senza logica extra
+        // Se vuoi permetterlo, aggiungi controllo unicità anche qui.
+        // existing.setEmail(updatedAccount.getEmail());
+
+        existing.setPassword(updatedAccount.getPassword());
+        existing.setNation(updatedAccount.getNation());
+        existing.setDescription(updatedAccount.getDescription());
+
+        // Non tocco createdAt, rimane la data di creazione originale
+
+        return accountRepository.save(existing);
     }
-    @Transactional
-    public Optional<Account> updateByEmail(String email, Account updated) {
-        return accountRepository.findByEmail(email).map(existing -> {
-            existing.setEmail(updated.getEmail());
-            existing.setPassword(updated.getPassword());
-            existing.setDescription(updated.getDescription());
-            existing.setCreatedAt(updated.getCreatedAt());
-            return accountRepository.save(existing);
-        });
+
+    /* =========================
+       CANCELLAZIONE
+       ========================= */
+
+    public void deleteAccountById(Long id) {
+        Account account = getAccountById(id); // garantisce che esista
+        // ATTENZIONE: se ci sono giochi/subscriptions/purchases legati
+        // e il DB ha FK con ON DELETE RESTRICT, questa delete fallirà.
+        // Decideremo in futuro se:
+        // - vietare la cancellazione se non è "vuoto"
+        // - oppure cancellare anche oggetti collegati.
+        accountRepository.delete(account);
     }
-        
+
+    public void deleteAccountByEmail(String email) {
+        Account account = getAccountByEmail(email);
+        accountRepository.delete(account);
+    }
+
+    /* =========================
+       QUERY DI RICERCA/FILTRI
+       ========================= */
+
+    @Transactional(readOnly = true)
+    public List<Account> searchByDescription(String text) {
+        return accountRepository.findByDescriptionContaining(text);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Account> getAccountsByNation(String nation) {
+        return accountRepository.findByNation(nation);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Account> getAccountsWithGames() {
+        return accountRepository.findByGamesIsNotEmpty();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Account> getAccountsWithSubscriptions() {
+        return accountRepository.findBySubscriptionsIsNotEmpty();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Account> getAccountsWithPurchases() {
+        return accountRepository.findByPurchasesIsNotEmpty();
+    }
 }

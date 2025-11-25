@@ -13,6 +13,9 @@ public class Purchase {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private Users user;
+    @ManyToOne
+    @JoinColumn(name = "account_id", nullable = false)
+    private Account account;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PurchaseType purchaseType; // FULL o RENTAL
@@ -22,11 +25,12 @@ public class Purchase {
     private LocalDate expirationDate;
     private String paymentMethod;
     @Enumerated(EnumType.STRING)
-    private PurchaseStatus purchaseStatus; // COMPLETED, PENDING, CANCELLED
+    private PurchaseStatus purchaseStatus; // DONE, PENDING, CANCELLED
   
-    public Purchase(Users user, PurchaseType purchaseType, double price, LocalDate purchaseDate,
+    public Purchase(Users user, Account account, PurchaseType purchaseType, double price, LocalDate purchaseDate,
                     LocalDate startDate, LocalDate expirationDate, String paymentMethod, PurchaseStatus purchaseStatus) {
         this.user = user;
+        this.account = account;
         this.purchaseType = purchaseType;
         this.price = price;
         this.purchaseDate = purchaseDate;
@@ -48,6 +52,12 @@ public class Purchase {
     }
     public void setUser(Users user) {
         this.user = user;
+    }
+    public Account getAccount() {
+        return account;
+    }
+    public void setAccount(Account account) {
+        this.account = account;
     }
     public PurchaseType getPurchaseType() {
         return purchaseType;

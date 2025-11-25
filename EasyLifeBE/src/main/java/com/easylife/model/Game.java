@@ -24,25 +24,35 @@ public class Game {
     private Boolean isPS5SecondaryAvailable;
     private Boolean isPS4PrimaryAvailable;
     private Boolean isPS4SecondaryAvailable;
+    private Boolean isActive;
 
     @ManyToOne
     @JoinColumn(name = "account_id")
     private Account account;
 
-    public Game(String gameName, String accountEmail, String accountPassword, LocalDate saleDate,
+    public Game(Long id, String gameName, String gameProfileId, Double price, Double salePrice, Double cost,
+                String nation, LocalDate saleDate, LocalDate purchaseDate, String orderNumber, String description,
                 Boolean isPS5PrimaryAvailable, Boolean isPS5SecondaryAvailable,
-                Boolean isPS4PrimaryAvailable, Boolean isPS4SecondaryAvailable,
-                Double price, String description, String gameProfileId) {
+                Boolean isPS4PrimaryAvailable, Boolean isPS4SecondaryAvailable, Boolean isActive, Account account) {
+        this.id = id;
         this.gameName = gameName;
+        this.gameProfileId = gameProfileId;
+        this.price = price;
+        this.salePrice = salePrice;
+        this.cost = cost;
+        this.nation = nation;
         this.saleDate = saleDate;
+        this.purchaseDate = purchaseDate;
+        this.orderNumber = orderNumber;
+        this.description = description;
         this.isPS5PrimaryAvailable = isPS5PrimaryAvailable;
         this.isPS5SecondaryAvailable = isPS5SecondaryAvailable;
         this.isPS4PrimaryAvailable = isPS4PrimaryAvailable;
         this.isPS4SecondaryAvailable = isPS4SecondaryAvailable;
-        this.price = price;
-        this.description = description;
-        this.gameProfileId = gameProfileId;
+        this.isActive = isActive;
+        this.account = account;
     }
+
     public Game() {
     }
     public Long getId() {
@@ -134,6 +144,12 @@ public class Game {
     }
     public void setIsPS4SecondaryAvailable(Boolean isPS4SecondaryAvailable) {
         this.isPS4SecondaryAvailable = isPS4SecondaryAvailable;
+    }
+    public Boolean getIsActive() {
+        return isActive;
+    }
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
     }
     public Account getAccount() {
         return account;

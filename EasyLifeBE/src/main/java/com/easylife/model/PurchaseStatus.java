@@ -2,7 +2,7 @@ package com.easylife.model;
 
 public enum PurchaseStatus {
     PLANNED,
-    ACTIVE,
+    DONE,
     EXPIRED,
     CANCELLED
 }

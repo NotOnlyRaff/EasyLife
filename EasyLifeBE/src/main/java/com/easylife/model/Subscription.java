@@ -20,6 +20,7 @@ public class Subscription {
     private LocalDate purchaseDate;
     private LocalDate activationDate;
     private LocalDate expirationDate;
+    private Boolean isActive;
     private int freeProfileNumber;
 
     @ManyToOne
@@ -27,7 +28,7 @@ public class Subscription {
     private Account account;
 
     public Subscription(String subscriptionType, double price, String nation, String vpnUsed,
-                        LocalDate saleDate, LocalDate purchaseDate, LocalDate activationDate, LocalDate expirationDate,
+                        LocalDate saleDate, LocalDate purchaseDate, LocalDate activationDate, LocalDate expirationDate, Boolean isActive,
                         int freeProfileNumber) {
         this.subscriptionType = subscriptionType;
         this.price = price;
@@ -37,6 +38,7 @@ public class Subscription {
         this.purchaseDate = purchaseDate;
         this.activationDate = activationDate;
         this.expirationDate = expirationDate;
+        this.isActive = isActive;
         this.freeProfileNumber = freeProfileNumber;
     }
     public Subscription() {
@@ -106,6 +108,12 @@ public class Subscription {
     }
     public void setExpirationDate(LocalDate expirationDate) {
         this.expirationDate = expirationDate;
+    }
+    public Boolean getIsActive() {
+        return isActive;
+    }
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
     }
     public int getFreeProfileNumber() {
         return freeProfileNumber;

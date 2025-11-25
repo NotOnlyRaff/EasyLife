@@ -1,103 +1,301 @@
 package com.easylife.service;
 
-import com.easylife.model.Game;
+import com.easylife.config.exception.BusinessException;
+import com.easylife.config.exception.ResourceNotFoundException;
+import com.easylife.model.Account;
 import com.easylife.model.Purchase;
-import com.easylife.model.Subscription;
 import com.easylife.model.Users;
+import com.easylife.model.PurchaseType;
+import com.easylife.model.PurchaseStatus;
 import com.easylife.repository.PurchaseRepository;
-import com.easylife.repository.UsersRepository;
-import com.easylife.repository.GameRepository;
-import com.easylife.repository.SubscriptionRepository;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Service
+@Transactional
 public class PurchaseService {
 
     private final PurchaseRepository purchaseRepository;
-    private final UsersRepository userRepository;
-    private final GameRepository gameRepository;
-    private final SubscriptionRepository subscriptionRepository;
+    private final UsersService UsersService; // service per l'entità Users
+    private final AccountService accountService; // service per l'entità Account
 
-    @Autowired
     public PurchaseService(PurchaseRepository purchaseRepository,
-                           UsersRepository userRepository,
-                           GameRepository gameRepository,
-                           SubscriptionRepository subscriptionRepository) {
+                           UsersService UsersService,
+                           AccountService accountService) {
         this.purchaseRepository = purchaseRepository;
-        this.userRepository = userRepository;
-        this.gameRepository = gameRepository;
-        this.subscriptionRepository = subscriptionRepository;
+        this.UsersService = UsersService;
+        this.accountService = accountService;
     }
 
-    public Purchase createPurchase(Long userId, Long gameId, Long subscriptionId,
-                                    Double price, String paymentMethod, String transactionId) {
-        Optional<Users> user = userRepository.findById(userId);
-        if (user.isEmpty()) throw new IllegalArgumentException("Utente non trovato");
+    /* =========================
+       LETTURA
+       ========================= */
 
-        Game game = gameId != null ? gameRepository.findById(gameId).orElse(null) : null;
-        Subscription subscription = subscriptionId != null ? subscriptionRepository.findById(subscriptionId).orElse(null) : null;
-
-        Purchase purchase = new Purchase();
-        purchase.setUser(user.get());
-        purchase.setGame(game);
-        purchase.setSubscription(subscription);
-        purchase.setPrice(price);
-        purchase.setPaymentMethod(paymentMethod);
-
-        return purchaseRepository.save(purchase);
-    }
-
+    @Transactional(readOnly = true)
     public List<Purchase> getAllPurchases() {
         return purchaseRepository.findAll();
     }
 
-    public List<Purchase> getPurchasesByUser(Users user) {
-        return purchaseRepository.findByUser(user);
+    @Transactional(readOnly = true)
+    public Purchase getPurchaseById(Long id) {
+        return purchaseRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Purchase not found with id: " + id));
     }
-    public List<Purchase> getPurchasesByGame(Game game) {
-        return purchaseRepository.findByGame(game);
+
+    @Transactional(readOnly = true)
+    public List<Purchase> getPurchasesByUser(Long userId) {
+        // Verifico che l’utente esista, altrimenti ti stai chiedendo acquisti di un fantasma
+        UsersService.getUserById(userId);
+        return purchaseRepository.findByUserId(userId);
     }
-    public List<Purchase> getPurchasesBySubscription(Subscription subscription) {
-        return purchaseRepository.findBySubscription(subscription);
+    @Transactional(readOnly = true)
+    public List<Purchase> getPurchasesByAccount(Long accountId) {
+        // Verifico che l’account esista, altrimenti ti stai chiedendo acquisti di un fantasma
+        // Assuming you have an AccountService similar to UsersService
+        accountService.getAccountById(accountId);
+        return purchaseRepository.findByAccountId(accountId);
     }
-    public List<Purchase> getPurchasesByPrice(Double price) {
-        return purchaseRepository.findByPrice(price);
+
+    @Transactional(readOnly = true)
+    public List<Purchase> getPurchasesByType(PurchaseType type) {
+        return purchaseRepository.findByPurchaseType(type);
     }
+
+    @Transactional(readOnly = true)
+    public List<Purchase> getPurchasesByStatus(PurchaseStatus status) {
+        return purchaseRepository.findByPurchaseStatus(status);
+    }
+
+    @Transactional(readOnly = true)
     public List<Purchase> getPurchasesByPaymentMethod(String paymentMethod) {
         return purchaseRepository.findByPaymentMethod(paymentMethod);
     }
-    public List<Purchase> getPurchasesByTransactionSocial(String transactionSocial) {
-        return purchaseRepository.findByTransactionSocial(transactionSocial);
+
+    @Transactional(readOnly = true)
+    public List<Purchase> getPurchasesAfterDate(LocalDate date) {
+        return purchaseRepository.findByPurchaseDateAfter(date);
     }
-    public Optional<Purchase> getPurchaseById(Long idTransaction) {
-        return purchaseRepository.findByIdTransaction(idTransaction);
+
+    @Transactional(readOnly = true)
+    public List<Purchase> getPurchasesExpiringBefore(LocalDate date) {
+        return purchaseRepository.findByExpirationDateBefore(date);
     }
-    public void deletePurchaseById(Long idTransaction) {
-        purchaseRepository.deleteByIdTransaction(idTransaction);
+
+    /**
+     * Restituisce tutte le purchase "attive" in una certa data.
+     * Usiamo sia il repository (per range date) sia una logica interna per status/type.
+     */
+    @Transactional(readOnly = true)
+    public List<Purchase> getActivePurchasesOn(LocalDate referenceDate) {
+        List<Purchase> candidates =
+                purchaseRepository.findByStartDateBeforeAndExpirationDateAfter(referenceDate, referenceDate);
+
+        return candidates.stream()
+                .filter(p -> computeIsActive(p, referenceDate))
+                .toList();
     }
-    public List<Purchase> getPurchasesByUserAndGame(Users user, Game game) {
-        return purchaseRepository.findByUserAndGame(user, game);
+
+    @Transactional(readOnly = true)
+    public boolean isPurchaseActiveOn(Long purchaseId, LocalDate referenceDate) {
+        Purchase purchase = getPurchaseById(purchaseId);
+        return computeIsActive(purchase, referenceDate);
     }
-    public List<Purchase> getPurchasesByUserAndSubscription(Users user, Subscription subscription) {
-        return purchaseRepository.findByUserAndSubscription(user, subscription);
-    }
-    public Optional<Purchase> updatePurchase(Long idTransaction, Purchase purchase) {
-        Optional<Purchase> existingPurchase = purchaseRepository.findByIdTransaction(idTransaction);
-        if (existingPurchase.isPresent()) {
-            Purchase updatedPurchase = existingPurchase.get();
-            updatedPurchase.setPrice(purchase.getPrice());
-            updatedPurchase.setPaymentMethod(purchase.getPaymentMethod());
-            updatedPurchase.setTransactionSocial(purchase.getTransactionSocial());
-            updatedPurchase.setUser(purchase.getUser());
-            updatedPurchase.setGame(purchase.getGame());
-            updatedPurchase.setSubscription(purchase.getSubscription());
-            return Optional.of(purchaseRepository.save(updatedPurchase));
+
+    /* =========================
+       CREAZIONE
+       ========================= */
+
+    /**
+     * Crea una purchase legandola a un Users e applicando la logica:
+     * - set default per purchaseDate/startDate
+     * - controlli su RENTAL (expiration obbligatoria)
+     * - stato iniziale (PENDING di default se non settato)
+     */
+    public Purchase createPurchase(Purchase purchase, Long userId, Long accountId) {
+        // Associa utente
+        Users user = UsersService.getUserById(userId);
+        purchase.setUser(user);
+        // Associa account
+        Account account = accountService.getAccountById(accountId);
+        purchase.setAccount(account);
+
+        // Default date
+        LocalDate now = LocalDate.now();
+        if (purchase.getPurchaseDate() == null) {
+            purchase.setPurchaseDate(now);
         }
-        return Optional.empty();
+        if (purchase.getStartDate() == null) {
+            purchase.setStartDate(purchase.getPurchaseDate());
+        }
+
+        // Regole per RENTAL
+        if (purchase.getPurchaseType() == PurchaseType.RENTAL) {
+            if (purchase.getExpirationDate() == null) {
+                throw new BusinessException("Rental purchase must have an expirationDate");
+            }
+            if (purchase.getExpirationDate().isBefore(purchase.getStartDate())) {
+                throw new BusinessException("expirationDate cannot be before startDate for RENTAL purchase");
+            }
+        }
+
+        // Default stato: se non specificato, PLANNED
+        if (purchase.getPurchaseStatus() == null) {
+            purchase.setPurchaseStatus(PurchaseStatus.PLANNED);
+        }
+
+        return purchaseRepository.save(purchase);
+    }
+
+    /* =========================
+       UPDATE
+       ========================= */
+
+    public Purchase updatePurchase(Long id, Purchase updated, Long userId, Long accountId) {
+        Purchase existing = getPurchaseById(id);
+
+        // Se viene passato userId, posso permettere il cambio utente
+        if (userId != null) {
+            Users user = UsersService.getUserById(userId);
+            existing.setUser(user);
+        }
+
+        if (accountId != null) {
+            Account account = accountService.getAccountById(accountId);
+            existing.setAccount(account);
+        }
+
+        if (updated.getPurchaseType() != null) {
+            existing.setPurchaseType(updated.getPurchaseType());
+        }
+
+        existing.setPrice(updated.getPrice());
+        existing.setPurchaseDate(updated.getPurchaseDate());
+        existing.setStartDate(updated.getStartDate());
+        existing.setExpirationDate(updated.getExpirationDate());
+        existing.setPaymentMethod(updated.getPaymentMethod());
+        existing.setPurchaseStatus(updated.getPurchaseStatus());
+
+        // Rivalidazione logica RENTAL/FULL
+        validateDatesAndType(existing);
+
+        return purchaseRepository.save(existing);
+    }
+
+    /* =========================
+       OPERAZIONI DI STATO
+       ========================= */
+
+    /**
+     * Segna una purchase come COMPLETED.
+     * Per esempio dopo che il pagamento è stato confermato.
+     */
+    public Purchase markCompleted(Long id) {
+        Purchase purchase = getPurchaseById(id);
+        if (purchase.getPurchaseStatus() == PurchaseStatus.CANCELLED) {
+            throw new BusinessException("Cannot mark a cancelled purchase as COMPLETED");
+        }
+        purchase.setPurchaseStatus(PurchaseStatus.DONE);
+        return purchaseRepository.save(purchase);
+    }
+
+    /**
+     * Segna una purchase come CANCELLED.
+     */
+    public Purchase cancelPurchase(Long id) {
+        Purchase purchase = getPurchaseById(id);
+        if (purchase.getPurchaseStatus() == PurchaseStatus.DONE) {
+            // business rule: non puoi cancellare una COMPLETED
+            throw new BusinessException("Cannot cancel a completed purchase");
+        }
+        purchase.setPurchaseStatus(PurchaseStatus.CANCELLED);
+        return purchaseRepository.save(purchase);
+    }
+
+    /* =========================
+       CANCELLAZIONE
+       ========================= */
+
+    public void deletePurchase(Long id) {
+        Purchase purchase = getPurchaseById(id); // valido esistenza
+        purchaseRepository.delete(purchase);
+    }
+
+    /* =========================
+       LOGICA PRIVATA
+       ========================= */
+
+    /**
+     * Valida coerenza tra tipo (FULL/RENTAL) e date start/expiration.
+     */
+    private void validateDatesAndType(Purchase purchase) {
+        PurchaseType type = purchase.getPurchaseType();
+        LocalDate start = purchase.getStartDate();
+        LocalDate expiration = purchase.getExpirationDate();
+
+        if (type == null) {
+            throw new BusinessException("PurchaseType is required");
+        }
+
+        if (type == PurchaseType.RENTAL) {
+            if (start == null || expiration == null) {
+                throw new BusinessException("RENTAL purchase requires both startDate and expirationDate");
+            }
+            if (expiration.isBefore(start)) {
+                throw new BusinessException("expirationDate cannot be before startDate for RENTAL purchase");
+            }
+        }
+
+        if (type == PurchaseType.FULL) {
+            // FULL: accettiamo che expiration sia null (nessuna scadenza)
+            // Se invece hai una scadenza anche per FULL (tipo licenza annuale), adatti qui.
+        }
+    }
+
+    /**
+     * Calcola se una purchase è "attiva" in una certa data.
+     * - Se NON COMPLETED → non attiva
+     * - FULL:
+     *      - se startDate != null e referenceDate < startDate → non attiva
+     *      - altrimenti attiva (nessuna scadenza)
+     * - RENTAL:
+     *      - attiva se startDate <= referenceDate <= expirationDate
+     */
+    private boolean computeIsActive(Purchase purchase, LocalDate referenceDate) {
+        if (purchase.getPurchaseStatus() != PurchaseStatus.DONE) {
+            return false;
+        }
+
+        LocalDate start = purchase.getStartDate();
+        LocalDate expiration = purchase.getExpirationDate();
+        PurchaseType type = purchase.getPurchaseType();
+
+        if (type == PurchaseType.FULL) {
+            if (start != null && referenceDate.isBefore(start)) {
+                return false;
+            }
+            // FULL senza expiration => attivo dopo la startDate
+            if (expiration == null) {
+                return true;
+            }
+            // se hai deciso che anche FULL scade, puoi usare questa logica:
+            boolean startsBeforeOrOn = (start == null) || !start.isAfter(referenceDate);
+            boolean endsAfterOrOn = !expiration.isBefore(referenceDate);
+            return startsBeforeOrOn && endsAfterOrOn;
+        }
+
+        if (type == PurchaseType.RENTAL) {
+            if (start == null || expiration == null) {
+                return false;
+            }
+            boolean startsBeforeOrOn = !start.isAfter(referenceDate);
+            boolean endsAfterOrOn = !expiration.isBefore(referenceDate);
+            return startsBeforeOrOn && endsAfterOrOn;
+        }
+
+        return false;
     }
 }
-    
