@@ -1,15 +1,12 @@
 import 'dart:convert';
 
-import 'package:easy_life_application/models/account_model.dart';
-import 'package:easy_life_application/models/users_model.dart';
-
 enum PurchaseType { FULL, RENTAL }
 enum PurchaseStatus { PLANNED, ACTIVE, EXPIRED, CANCELLED }
 
 class PurchaseModel {
   final int id;
-  final UsersModel user;
-  final AccountModel account;
+  final int userId;
+  final int accountId;
   final PurchaseType purchaseType;
   final double price;
   final DateTime purchaseDate;
@@ -20,8 +17,8 @@ class PurchaseModel {
 
   PurchaseModel({
     required this.id,
-    required this.user,
-    required this.account,
+    required this.userId,
+    required this.accountId,
     required this.purchaseType,
     required this.price,
     required this.purchaseDate,
@@ -33,8 +30,8 @@ class PurchaseModel {
 
   PurchaseModel copyWith({
     int? id,
-    UsersModel? user,
-    AccountModel? account,
+    int? userId,
+    int? accountId,
     PurchaseType? purchaseType,
     double? price,
     DateTime? purchaseDate,
@@ -45,8 +42,8 @@ class PurchaseModel {
   }) {
     return PurchaseModel(
       id: id ?? this.id,
-      user: user ?? this.user,
-      account: account ?? this.account,
+      userId: userId ?? this.userId,
+      accountId: accountId ?? this.accountId,
       purchaseType: purchaseType ?? this.purchaseType,
       price: price ?? this.price,
       purchaseDate: purchaseDate ?? this.purchaseDate,
@@ -60,8 +57,8 @@ class PurchaseModel {
   factory PurchaseModel.fromMap(Map<String, dynamic> map) {
     return PurchaseModel(
       id: map['id'],
-      user: UsersModel.fromMap(map['user']),
-      account: AccountModel.fromMap(map['account']),
+      userId: map['userId'],
+      accountId: map['accountId'],
       purchaseType: PurchaseType.values.firstWhere((e) => e.toString() == 'PurchaseType.' + map['purchaseType']),
       price: map['price'],
       purchaseDate: DateTime.parse(map['purchaseDate']),
@@ -75,8 +72,8 @@ class PurchaseModel {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'user': user.toMap(),
-      'account': account.toMap(),
+      'userId': userId,
+      'accountId': accountId,
       'purchaseType': purchaseType.toString().split('.').last,
       'price': price,
       'purchaseDate': purchaseDate.toIso8601String(),
@@ -93,6 +90,6 @@ class PurchaseModel {
 
   @override
   String toString() {
-    return 'PurchaseModel(id: $id, user: $user, account: $account, purchaseType: $purchaseType, price: $price, purchaseDate: $purchaseDate, startDate: $startDate, expirationDate: $expirationDate, paymentMethod: $paymentMethod, purchaseStatus: $purchaseStatus)';
+    return 'PurchaseModel(id: $id, userId: $userId, accountId: $accountId, purchaseType: $purchaseType, price: $price, purchaseDate: $purchaseDate, startDate: $startDate, expirationDate: $expirationDate, paymentMethod: $paymentMethod, purchaseStatus: $purchaseStatus)';
   }
 }

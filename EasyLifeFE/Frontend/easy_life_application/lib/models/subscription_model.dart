@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import 'package:easy_life_application/models/account_model.dart';
-
 class SubscriptionModel{
   final int id;
   final String subscriptionType;
@@ -10,13 +8,13 @@ class SubscriptionModel{
   final double? cost;
   final String nation;
   final String vpnUsed;
-  final DateTime saleDate;
-  final DateTime purchaseDate;
-  final DateTime activationDate;
-  final DateTime expirationDate;
+  final DateTime? saleDate;
+  final DateTime? purchaseDate;
+  final DateTime? activationDate;
+  final DateTime? expirationDate;
   final bool isActive;
   final int freeProfileNumber;
-  final AccountModel account;
+  final int accountId;
 
   SubscriptionModel({
     required this.id,
@@ -26,13 +24,13 @@ class SubscriptionModel{
     this.cost,
     required this.nation,
     required this.vpnUsed,
-    required this.saleDate,
-    required this.purchaseDate,
-    required this.activationDate,
-    required this.expirationDate,
+    this.saleDate,
+    this.purchaseDate,
+    this.activationDate,
+    this.expirationDate,
     required this.isActive,
     required this.freeProfileNumber,
-    required this.account,
+    required this.accountId,
   });
 
   SubscriptionModel copyWith({
@@ -49,7 +47,7 @@ class SubscriptionModel{
     DateTime? expirationDate,
     bool? isActive,
     int? freeProfileNumber,
-    AccountModel? account,
+    int? accountId,
   }) {
     return SubscriptionModel(
       id: id ?? this.id,
@@ -65,7 +63,7 @@ class SubscriptionModel{
       expirationDate: expirationDate ?? this.expirationDate,
       isActive: isActive ?? this.isActive,
       freeProfileNumber: freeProfileNumber ?? this.freeProfileNumber,
-      account: account ?? this.account,
+      accountId: accountId ?? this.accountId,
     );
   }
 
@@ -84,7 +82,7 @@ class SubscriptionModel{
       expirationDate: DateTime.parse(map['expirationDate']),
       isActive: map['isActive'],
       freeProfileNumber: map['freeProfileNumber'],
-      account: AccountModel.fromMap(map['account']),
+      accountId: map['accountId'],
     );
   }
 
@@ -97,13 +95,13 @@ class SubscriptionModel{
       'cost': cost,
       'nation': nation,
       'vpnUsed': vpnUsed,
-      'saleDate': saleDate.toIso8601String(),
-      'purchaseDate': purchaseDate.toIso8601String(),
-      'activationDate': activationDate.toIso8601String(),
-      'expirationDate': expirationDate.toIso8601String(),
+      'saleDate': saleDate?.toIso8601String(),
+      'purchaseDate': purchaseDate?.toIso8601String(),
+      'activationDate': activationDate?.toIso8601String(),
+      'expirationDate': expirationDate?.toIso8601String(),
       'isActive': isActive,
       'freeProfileNumber': freeProfileNumber,
-      'account': account.toMap(),
+      'accountId': accountId,
     };
   }
   
@@ -112,7 +110,7 @@ class SubscriptionModel{
   String toJson() => json.encode(toMap());
 
   String toString() {
-    return 'SubscriptionModel(id: $id, subscriptionType: $subscriptionType, price: $price, salePrice: $salePrice, cost: $cost, nation: $nation, vpnUsed: $vpnUsed, saleDate: $saleDate, purchaseDate: $purchaseDate, activationDate: $activationDate, expirationDate: $expirationDate, isActive: $isActive, freeProfileNumber: $freeProfileNumber, account: $account)';
+    return 'SubscriptionModel(id: $id, subscriptionType: $subscriptionType, price: $price, salePrice: $salePrice, cost: $cost, nation: $nation, vpnUsed: $vpnUsed, saleDate: $saleDate, purchaseDate: $purchaseDate, activationDate: $activationDate, expirationDate: $expirationDate, isActive: $isActive, freeProfileNumber: $freeProfileNumber, accountId: $accountId)';
   }
 
   @override
@@ -124,7 +122,7 @@ class SubscriptionModel{
         other.subscriptionType == subscriptionType &&
         other.nation == nation &&
         other.vpnUsed == vpnUsed &&
-        other.account.email == account.email;
+        other.accountId == accountId;
   }
 
   @override
@@ -133,7 +131,7 @@ class SubscriptionModel{
         subscriptionType.hashCode ^
         nation.hashCode ^
         vpnUsed.hashCode ^
-        account.email.hashCode;
+        accountId.hashCode;
   }
   
 }

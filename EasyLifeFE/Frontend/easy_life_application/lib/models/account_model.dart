@@ -1,9 +1,5 @@
 import 'dart:convert';
 
-import 'package:easy_life_application/models/game_model.dart';
-import 'package:easy_life_application/models/subscription_model.dart';
-import 'package:easy_life_application/models/purchase_model.dart';
-
 enum AccountStatus {ACTIVE, PENDING, CANCELLED }
 class AccountModel {
 
@@ -12,10 +8,7 @@ class AccountModel {
   final String password;
   final DateTime createdAt;
   final String nation;
-  final String description;
-  final List<GameModel> games;
-  final List<SubscriptionModel> subscriptions;
-  final List<PurchaseModel> purchases;
+  final String? description;
   final AccountStatus accountStatus;
 
   AccountModel({
@@ -24,10 +17,7 @@ class AccountModel {
     required this.password,
     required this.createdAt,
     required this.nation,
-    required this.description,
-    required this.games,
-    required this.subscriptions,
-    required this.purchases,
+    this.description,
     required this.accountStatus,
   });
 
@@ -38,9 +28,6 @@ class AccountModel {
     DateTime? createdAt,
     String? nation,
     String? description,
-    List<GameModel>? games,
-    List<SubscriptionModel>? subscriptions,
-    List<PurchaseModel>? purchases,
     AccountStatus? accountStatus,
   }) {
     return AccountModel(
@@ -50,9 +37,6 @@ class AccountModel {
       createdAt: createdAt ?? this.createdAt,
       nation: nation ?? this.nation,
       description: description ?? this.description,
-      games: games ?? this.games,
-      subscriptions: subscriptions ?? this.subscriptions,
-      purchases: purchases ?? this.purchases,
       accountStatus: accountStatus ?? this.accountStatus,
     );
   }
@@ -64,10 +48,7 @@ class AccountModel {
       password: map['password'],
       createdAt: DateTime.parse(map['createdAt']),
       nation: map['nation'],
-      description: map['description'],
-      games: List<GameModel>.from(map['games']?.map((x) => GameModel.fromMap(x))),
-      subscriptions: List<SubscriptionModel>.from(map['subscriptions']?.map((x) => SubscriptionModel.fromMap(x))),
-      purchases: List<PurchaseModel>.from(map['purchases']?.map((x) => PurchaseModel.fromMap(x))),
+      description: (map['description'] ?? '') as String?,
       accountStatus: AccountStatus.values.firstWhere((e) => e.toString() == 'AccountStatus.' + map['accountStatus']),
     );
   }
@@ -80,9 +61,6 @@ class AccountModel {
       'createdAt': createdAt.toIso8601String(),
       'nation': nation,
       'description': description,
-      'games': games.map((x) => x.toMap()).toList(),
-      'subscriptions': subscriptions.map((x) => x.toMap()).toList(),
-      'purchases': purchases.map((x) => x.toMap()).toList(),
       'accountStatus': accountStatus.toString().split('.').last,
     };
   }
@@ -91,8 +69,9 @@ class AccountModel {
 
   String toJson() => json.encode(toMap());
 
+  @override
   String toString() {
-    return 'AccountModel(id: $id, email: $email, password: $password, createdAt: $createdAt, nation: $nation, description: $description, games: $games, subscriptions: $subscriptions, purchases: $purchases, accountStatus: $accountStatus)';
+    return 'AccountModel(id: $id, email: $email, password: $password, createdAt: $createdAt, nation: $nation, description: $description, accountStatus: $accountStatus)';
   }
 
   @override

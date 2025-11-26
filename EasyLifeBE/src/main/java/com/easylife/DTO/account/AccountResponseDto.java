@@ -6,23 +6,26 @@ public class AccountResponseDto {
 
     private Long id;
     private String email;
+    private String password;
     private LocalDate createdAt;
     private String nation;
     private String description;
-    private String status; // enum → esposto come stringa
+    private String accountStatus; // enum → esposto come stringa
 
     public AccountResponseDto(Long id,
                               String email,
+                              String password,
                               LocalDate createdAt,
                               String nation,
                               String description,
-                              String status) {
+                              String accountStatus) {
         this.id = id;
         this.email = email;
+        this.password = password;
         this.createdAt = createdAt;
         this.nation = nation;
         this.description = description;
-        this.status = status;
+        this.accountStatus = accountStatus;
     }
 
     public Long getId() {
@@ -31,6 +34,10 @@ public class AccountResponseDto {
 
     public String getEmail() {
         return email;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
     public LocalDate getCreatedAt() {
@@ -45,7 +52,7 @@ public class AccountResponseDto {
         return description;
     }
 
-    public String getStatus() {
-        return status;
+    public String getAccountStatus() {
+        return accountStatus;
     }
 }

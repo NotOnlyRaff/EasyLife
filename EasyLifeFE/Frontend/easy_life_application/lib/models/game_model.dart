@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import 'package:easy_life_application/models/account_model.dart';
-
 class GameModel {
 
   final int id;
@@ -20,7 +18,7 @@ class GameModel {
   final bool isPS4PrimaryAvailable;
   final bool isPS4SecondaryAvailable;
   final bool isActive;
-  final AccountModel account;
+  final int accountId;
 
   GameModel({
     required this.id,
@@ -39,7 +37,7 @@ class GameModel {
     required this.isPS4PrimaryAvailable,
     required this.isPS4SecondaryAvailable,
     required this.isActive,
-    required this.account,
+    required this.accountId,
   });
 
   GameModel copyWith({
@@ -59,7 +57,7 @@ class GameModel {
     bool? isPS4PrimaryAvailable,
     bool? isPS4SecondaryAvailable,
     bool? isActive,
-    AccountModel? account,
+    int? accountId,
   }) {
     return GameModel(
       id: id ?? this.id,
@@ -82,7 +80,7 @@ class GameModel {
       isPS4SecondaryAvailable:
           isPS4SecondaryAvailable ?? this.isPS4SecondaryAvailable,
       isActive: isActive ?? this.isActive,
-      account: account ?? this.account,
+      accountId: accountId ?? this.accountId,
     );
   }
 
@@ -104,7 +102,7 @@ class GameModel {
       isPS4PrimaryAvailable: map['isPS4PrimaryAvailable'],
       isPS4SecondaryAvailable: map['isPS4SecondaryAvailable'],
       isActive: map['isActive'],
-      account: AccountModel.fromMap(map['account']),
+      accountId: map['accountId'],
     );
   }
 
@@ -126,7 +124,7 @@ class GameModel {
       'isPS4PrimaryAvailable': isPS4PrimaryAvailable,
       'isPS4SecondaryAvailable': isPS4SecondaryAvailable,
       'isActive': isActive,
-      'account': account.toMap(),
+      'accountId': accountId,
     };
   }
 
@@ -136,7 +134,7 @@ class GameModel {
   String toJson() => json.encode(toMap());
 
   String toString() {
-    return 'GameModel(id: $id, gameName: $gameName, gameProfileId: $gameProfileId, price: $price, salePrice: $salePrice, cost: $cost, nation: $nation, saleDate: $saleDate, purchaseDate: $purchaseDate, orderNumber: $orderNumber, description: $description, isPS5PrimaryAvailable: $isPS5PrimaryAvailable, isPS5SecondaryAvailable: $isPS5SecondaryAvailable, isPS4PrimaryAvailable: $isPS4PrimaryAvailable, isPS4SecondaryAvailable: $isPS4SecondaryAvailable, isActive: $isActive, account: $account)';
+    return 'GameModel(id: $id, gameName: $gameName, gameProfileId: $gameProfileId, price: $price, salePrice: $salePrice, cost: $cost, nation: $nation, saleDate: $saleDate, purchaseDate: $purchaseDate, orderNumber: $orderNumber, description: $description, isPS5PrimaryAvailable: $isPS5PrimaryAvailable, isPS5SecondaryAvailable: $isPS5SecondaryAvailable, isPS4PrimaryAvailable: $isPS4PrimaryAvailable, isPS4SecondaryAvailable: $isPS4SecondaryAvailable, isActive: $isActive, accountId: $accountId)';
   }
 
   @override
@@ -148,7 +146,7 @@ class GameModel {
         other.gameName == gameName &&
         other.gameProfileId == gameProfileId &&
         other.orderNumber == orderNumber &&
-         other.account.email == account.email;
+         other.accountId == accountId;
   }
 
   @override
@@ -157,6 +155,6 @@ class GameModel {
         gameName.hashCode ^
         gameProfileId.hashCode ^
         orderNumber.hashCode ^
-        account.email.hashCode;
+        accountId.hashCode;
   }
 }

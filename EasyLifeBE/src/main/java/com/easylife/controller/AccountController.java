@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@CrossOrigin(origins = "http://localhost:53448")
 @RestController
 @RequestMapping("/api/accounts")
 public class AccountController {
@@ -178,14 +179,15 @@ public class AccountController {
        ========================= */
 
     private AccountResponseDto toAccountResponseDto(Account account) {
-        String status = account.getStatus() != null ? account.getStatus().name() : null;
+        String accountStatus = account.getAccountStatus() != null ? account.getAccountStatus().name() : null;
         return new AccountResponseDto(
                 account.getId(),
                 account.getEmail(),
+                account.getPassword(),
                 account.getCreatedAt(),
                 account.getNation(),
                 account.getDescription(),
-                status
+                accountStatus
         );
     }
 

@@ -8,14 +8,12 @@ class UsersModel {
   final String firstName;
   final String surname;
   final int purchaseNumber;
-  final List<PurchaseModel> purchases;
 
   UsersModel({
     required this.id,
     required this.firstName,
     required this.surname,
     required this.purchaseNumber,
-    required this.purchases,
   });
 
   UsersModel copyWith({
@@ -30,7 +28,6 @@ class UsersModel {
       firstName: firstName ?? this.firstName,
       surname: surname ?? this.surname,
       purchaseNumber: purchaseNumber ?? this.purchaseNumber,
-      purchases: purchases ?? this.purchases,
     );
   }
 
@@ -40,8 +37,6 @@ class UsersModel {
       firstName: map['firstName'],
       surname: map['surname'],
       purchaseNumber: map['purchaseNumber'],
-      purchases: List<PurchaseModel>.from(
-        map['purchases']?.map((x) => PurchaseModel.fromMap(x))),
     );
   }
   
@@ -51,7 +46,6 @@ class UsersModel {
       'firstName': firstName,
       'surname': surname,
       'purchaseNumber': purchaseNumber,
-      'purchases': purchases.map((x) => x.toMap()).toList(),
     };
   }
 
@@ -61,7 +55,7 @@ class UsersModel {
 
   @override
   String toString() {
-    return 'UsersModel(id: $id, firstName: $firstName, surname: $surname, purchaseNumber: $purchaseNumber, purchases: $purchases)';
+    return 'UsersModel(id: $id, firstName: $firstName, surname: $surname, purchaseNumber: $purchaseNumber)';
   }
 
 }

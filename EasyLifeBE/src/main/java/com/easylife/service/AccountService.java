@@ -89,8 +89,8 @@ public class AccountService {
         if (account.getCreatedAt() == null) {
             account.setCreatedAt(LocalDate.now());
         }
-        if (account.getStatus() == null) {
-            account.setStatus(AccountStatus.PENDING);
+        if (account.getAccountStatus() == null) {
+            account.setAccountStatus(AccountStatus.PENDING);
         }
 
         // TODO: in futuro: cifrare password prima del salvataggio

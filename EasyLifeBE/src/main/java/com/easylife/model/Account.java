@@ -17,7 +17,7 @@ public class Account {
     private LocalDate createdAt;
     private String nation;
     private String description;
-    private AccountStatus status;
+    private AccountStatus accountStatus;
     
     @OneToMany(mappedBy = "account")
     private List<Game> games = new ArrayList<>();
@@ -72,11 +72,11 @@ public class Account {
         this.description = description;
     }
     
-    public AccountStatus getStatus() {
-        return status;
+    public AccountStatus getAccountStatus() {
+        return accountStatus;
     }
-    public void setStatus(AccountStatus status) {
-        this.status = status;
+    public void setAccountStatus(AccountStatus accountStatus) {
+        this.accountStatus = accountStatus;
     }
     public List<Game> getGames() {
         return games;
