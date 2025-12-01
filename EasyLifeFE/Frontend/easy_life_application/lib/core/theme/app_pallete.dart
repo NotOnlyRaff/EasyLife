@@ -1,20 +1,34 @@
+// lib/core/theme/app_pallete.dart
 import 'package:flutter/material.dart';
 
 class Pallete {
-  static const cardColor = Color.fromRGBO(30, 30, 30, 1);
-  static const greenColor = Colors.green;
-  static const subtitleText = Color(0xffa7a7a7);
-  static const inactiveBottomBarItemColor = Color(0xffababab);
+  // 🔵 Background gradient (come in HomePage)
+  static const Color backgroundTop = Color(0xFF020617);   // blu quasi nero
+  static const Color backgroundMiddle = Color(0xFF0F172A); // blu scuro
+  static const Color backgroundBottom = Color(0xFF1D3557); // blu più morbido
 
-  static const Color backgroundColor = Color.fromRGBO(18, 18, 18, 1);
-  static const Color gradient1 = Color.fromRGBO(187, 63, 221, 1);
-  static const Color gradient2 = Color.fromRGBO(251, 109, 169, 1);
-  static const Color gradient3 = Color.fromRGBO(255, 159, 124, 1);
-  static const Color borderColor = Color.fromRGBO(52, 51, 67, 1);
-  static const Color whiteColor = Colors.white;
-  static const Color greyColor = Colors.grey;
-  static const Color errorColor = Colors.redAccent;
-  static const Color transparentColor = Colors.transparent;
+  static const LinearGradient mainBackgroundGradient = LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [
+      backgroundTop,
+      backgroundMiddle,
+      backgroundBottom,
+    ],
+    stops: [0.0, 0.5, 1.0],
+  );
 
-  static const Color inactiveSeekColor = Colors.white38;
+  // ✏️ Testi
+  static const Color textPrimary = Colors.white;
+  static const Color textSecondary = Color(0xFFCBD5F5);
+
+  // 🟦 Bordi / linee / card
+  static const Color borderColor = Color(0xFF1F2937);
+
+  // 💡 Accenti "neon" (per searchbar, icone, etc.)
+  static const Color accentBlue = Color(0xFF38BDF8);
+  static const Color accentGreen = Color(0xFF22C55E);
+
+  // 🧱 Background di scaffold quando non usi il gradiente
+  static const Color backgroundColor = backgroundMiddle;
 }

@@ -16,7 +16,7 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         // Origine del frontend (dev)
-        config.setAllowedOrigins(List.of("http://localhost:51394"));
+        config.setAllowedOrigins(List.of("http://localhost:55869"));
         //config.setAllowedOriginPatterns(List.of("*")); 
         // o List.of("http://localhost:3000", "http://localhost:64761") se ne hai più
 

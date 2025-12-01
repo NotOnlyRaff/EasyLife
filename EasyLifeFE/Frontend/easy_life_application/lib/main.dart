@@ -1,5 +1,5 @@
 import 'package:easy_life_application/core/theme/theme.dart';
-import 'package:easy_life_application/screen/account/account_home_page.dart';
+import 'package:easy_life_application/screen/home/home_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -14,7 +14,7 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       title: 'EasyLife',
       theme: AppTheme.darkThemeMode,
-      home: const AccountHomePage(),
+      home: const HomePage(),
     );
   }
 }

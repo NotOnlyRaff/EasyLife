@@ -5,6 +5,7 @@ import com.easylife.DTO.account.AccountResponseDto;
 import com.easylife.DTO.game.GameResponseDto;
 import com.easylife.DTO.purchase.PurchaseResponseDto;
 import com.easylife.DTO.subscription.SubscriptionResponseDto;
+import com.easylife.config.exception.ResourceNotFoundException;
 import com.easylife.model.Account;
 import com.easylife.model.Game;
 import com.easylife.model.Subscription;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@CrossOrigin(origins = "http://localhost:53448")
+@CrossOrigin(origins = "http://localhost:55869")
 @RestController
 @RequestMapping("/api/accounts")
 public class AccountController {
@@ -47,8 +48,11 @@ public class AccountController {
     }
 
     @GetMapping("/email")
-    public AccountResponseDto getAccountByEmail(@RequestParam String email) {
+    public AccountResponseDto getAccountByEmail(@RequestParam("email") String email) {
         Account account = accountService.getAccountByEmail(email);
+        if (account == null) {
+            throw new ResourceNotFoundException("Account not found with email: " + email);
+        }
         return toAccountResponseDto(account);
     }
 
@@ -145,7 +149,7 @@ public class AccountController {
        ========================= */
 
     @PutMapping("/{id}")
-    public AccountResponseDto updateAccount(@PathVariable Long id,
+    public AccountResponseDto updateAccount(@PathVariable("id") Long id,
                                             @RequestBody AccountRequestDto request) {
 
         Account updated = new Account();
@@ -163,13 +167,13 @@ public class AccountController {
        ========================= */
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAccountById(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteAccountById(@PathVariable("id") Long id) {
         accountService.deleteAccountById(id);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/by-email")
-    public ResponseEntity<Void> deleteAccountByEmail(@RequestParam String email) {
+    public ResponseEntity<Void> deleteAccountByEmail(@RequestParam("email") String email) {
         accountService.deleteAccountByEmail(email);
         return ResponseEntity.noContent().build();
     }
