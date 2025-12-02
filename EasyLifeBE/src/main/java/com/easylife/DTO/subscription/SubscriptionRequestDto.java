@@ -15,6 +15,7 @@ public class SubscriptionRequestDto {
     private LocalDate activationDate;
     private LocalDate expirationDate;
     private Integer freeProfileNumber;
+    private Boolean isActive;
     private Long accountId; // ID dell'account su cui vive l'abbonamento
 
     public SubscriptionRequestDto() {
@@ -66,5 +67,9 @@ public class SubscriptionRequestDto {
 
     public Long getAccountId() {
         return accountId;
+    }
+
+    public Boolean getIsActive() {
+        return isActive;
     }
 }

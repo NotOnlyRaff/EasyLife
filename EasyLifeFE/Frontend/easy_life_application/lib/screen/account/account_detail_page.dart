@@ -1,7 +1,13 @@
 import 'package:easy_life_application/core/theme/app_pallete.dart';
 import 'package:easy_life_application/models/account_model.dart';
+import 'package:easy_life_application/models/game_model.dart';
+import 'package:easy_life_application/models/subscription_model.dart';
 import 'package:easy_life_application/screen/account/account_edit_page.dart';
+import 'package:easy_life_application/screen/game/game_detail_page.dart';
+import 'package:easy_life_application/screen/subscription/subscription_detail_page.dart';
 import 'package:easy_life_application/services/account/account_service.dart';
+import 'package:easy_life_application/services/game/game_service.dart';
+import 'package:easy_life_application/services/subscription/subscription_service.dart';
 import 'package:flutter/material.dart';
 
 class AccountDetailPage extends StatefulWidget {
@@ -16,13 +22,60 @@ class AccountDetailPage extends StatefulWidget {
 class _AccountDetailPageState extends State<AccountDetailPage> {
   late AccountModel _account;
   late final AccountService _accountService;
+  late final GameService _gameService;
+  late final SubscriptionService _subscriptionService;
+
   bool _obscurePassword = true;
   bool _isDeleting = false;
+
+  // 🔗 Relazioni
+  List<GameModel> _games = [];
+  List<SubscriptionModel> _subscriptions = [];
+  bool _isLoadingRelations = false;
+  String? _relationsError;
+
   @override
   void initState() {
     super.initState();
     _account = widget.account;
     _accountService = AccountService();
+    _gameService = GameService();
+    _subscriptionService = SubscriptionService();
+
+    _loadRelatedData();
+  }
+
+  Future<void> _loadRelatedData() async {
+    setState(() {
+      _isLoadingRelations = true;
+      _relationsError = null;
+    });
+
+    try {
+      // puoi ottimizzare con endpoint dedicati, per ora riuso getAll*
+      final games = await _gameService.getAllGames();
+      final subs = await _subscriptionService.getAllSubscriptions();
+
+      if (!mounted) return;
+
+      setState(() {
+        _games =
+            games.where((g) => g.accountId == _account.id).toList(growable: false);
+        _subscriptions = subs
+            .where((s) => s.accountId == _account.id)
+            .toList(growable: false);
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _relationsError = 'Errore caricamento giochi/subscription: $e';
+      });
+    } finally {
+      if (!mounted) return;
+      setState(() {
+        _isLoadingRelations = false;
+      });
+    }
   }
 
   Color _statusColor(AccountStatus status) {
@@ -72,6 +125,8 @@ class _AccountDetailPageState extends State<AccountDetailPage> {
                 _buildMainInfoCard(context),
                 const SizedBox(height: 16),
                 _buildMetaInfoCard(context),
+                const SizedBox(height: 16),
+                _buildRelationsSection(context), // 👈 NUOVA SEZIONE
                 const SizedBox(height: 24),
                 _buildActions(context),
               ],
@@ -108,9 +163,9 @@ class _AccountDetailPageState extends State<AccountDetailPage> {
               Text(
                 _account.email,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -153,7 +208,8 @@ class _AccountDetailPageState extends State<AccountDetailPage> {
                   const SizedBox(width: 12),
                   Text(
                     _account.nation,
-                    style: const TextStyle(color: Colors.white70, fontSize: 12),
+                    style:
+                        const TextStyle(color: Colors.white70, fontSize: 12),
                   ),
                 ],
               ),
@@ -204,7 +260,8 @@ class _AccountDetailPageState extends State<AccountDetailPage> {
 
   // Row specifica per password con occhio
   Widget _passwordRow() {
-    final displayedPassword = _obscurePassword ? '••••••••' : _account.password;
+    final displayedPassword =
+        _obscurePassword ? '••••••••' : _account.password;
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -261,11 +318,8 @@ class _AccountDetailPageState extends State<AccountDetailPage> {
 
   // CARD META
   Widget _buildMetaInfoCard(BuildContext context) {
-    final createdAtString = _account.createdAt
-        .toLocal()
-        .toString()
-        .split('.')
-        .first;
+    final createdAtString =
+        _account.createdAt.toLocal().toString().split('.').first;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -287,6 +341,287 @@ class _AccountDetailPageState extends State<AccountDetailPage> {
             icon: Icons.shield,
             label: 'Status',
             value: _statusLabel(_account.accountStatus),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 🔗 SEZIONE RELAZIONI (Giochi + Subscription)
+  Widget _buildRelationsSection(BuildContext context) {
+    if (_isLoadingRelations) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.only(top: 8.0),
+          child: Column(
+            children: const [
+              CircularProgressIndicator(),
+              SizedBox(height: 8),
+              Text(
+                'Caricamento giochi e subscription...',
+                style: TextStyle(color: Colors.white70, fontSize: 12),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (_relationsError != null) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.red.withOpacity(0.15),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.redAccent.withOpacity(0.4)),
+        ),
+        child: Text(
+          _relationsError!,
+          style: const TextStyle(color: Colors.redAccent, fontSize: 12),
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (_games.isNotEmpty) _buildGamesCard(context) else _buildEmptyGames(),
+        const SizedBox(height: 12),
+        if (_subscriptions.isNotEmpty)
+          _buildSubscriptionsCard(context)
+        else
+          _buildEmptySubscriptions(),
+      ],
+    );
+  }
+
+  Widget _buildGamesCard(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: _glassCardDecoration(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _sectionTitle('Games collegati'),
+          const SizedBox(height: 8),
+          ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: _games.length,
+            separatorBuilder: (_, __) =>
+                const Divider(color: Colors.white12, height: 10),
+            itemBuilder: (context, index) {
+              final game = _games[index];
+              final margin = game.salePrice - game.cost;
+              final marginColor =
+                  margin >= 0 ? const Color(0xFF4CAF50) : const Color(0xFFF44336);
+
+              return InkWell(
+                borderRadius: BorderRadius.circular(10),
+                onTap: () async {
+                  final changed = await Navigator.of(context).push<bool>(
+                    MaterialPageRoute(
+                      builder: (_) => GameDetailPage(game: game),
+                    ),
+                  );
+                  if (changed == true) {
+                    _loadRelatedData();
+                  }
+                },
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 6.0, horizontal: 2),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.videogame_asset,
+                        size: 20,
+                        color: Colors.white70,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              game.gameName,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              'Order: ${game.orderNumber} • ${game.nation}',
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                fontSize: 11,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        '${margin.toStringAsFixed(2)}€',
+                        style: TextStyle(
+                          color: marginColor,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const Icon(
+                        Icons.chevron_right,
+                        size: 18,
+                        color: Colors.white54,
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSubscriptionsCard(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: _glassCardDecoration(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _sectionTitle('Subscriptions collegate'),
+          const SizedBox(height: 8),
+          ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: _subscriptions.length,
+            separatorBuilder: (_, __) =>
+                const Divider(color: Colors.white12, height: 10),
+            itemBuilder: (context, index) {
+              final sub = _subscriptions[index];
+              final margin = (sub.salePrice ?? 0) - (sub.cost ?? 0);
+              final marginColor =
+                  margin >= 0 ? const Color(0xFF4CAF50) : const Color(0xFFF44336);
+
+              return InkWell(
+                borderRadius: BorderRadius.circular(10),
+                onTap: () async {
+                  final changed = await Navigator.of(context).push<bool>(
+                    MaterialPageRoute(
+                      builder: (_) => SubscriptionDetailPage(
+                        subscription: sub,
+                      ),
+                    ),
+                  );
+                  if (changed == true) {
+                    _loadRelatedData();
+                  }
+                },
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 6.0, horizontal: 2),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.subscriptions_outlined,
+                        size: 20,
+                        color: Colors.white70,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              sub.subscriptionType,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              '${sub.nation} • VPN: ${sub.vpnUsed}',
+                              style: const TextStyle(
+                                color: Colors.white70,
+                                fontSize: 11,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        '${margin.toStringAsFixed(2)}€',
+                        style: TextStyle(
+                          color: marginColor,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const Icon(
+                        Icons.chevron_right,
+                        size: 18,
+                        color: Colors.white54,
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyGames() {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: _glassCardDecoration(),
+      child: Row(
+        children: const [
+          Icon(Icons.videogame_asset_off, size: 18, color: Colors.white54),
+          SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              'Nessun game collegato a questo account.',
+              style: TextStyle(color: Colors.white70, fontSize: 12),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptySubscriptions() {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: _glassCardDecoration(),
+      child: Row(
+        children: const [
+          Icon(Icons.subscriptions, size: 18, color: Colors.white54),
+          SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              'Nessuna subscription collegata a questo account.',
+              style: TextStyle(color: Colors.white70, fontSize: 12),
+            ),
           ),
         ],
       ),
@@ -337,11 +672,10 @@ class _AccountDetailPageState extends State<AccountDetailPage> {
     setState(() {
       _account = updated;
     });
-    // dopo update riuscito
-    Navigator.of(context).pop(true);
-
 
     if (!mounted) return;
+    Navigator.of(context).pop(true);
+
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(const SnackBar(content: Text('Account aggiornato')));
@@ -366,7 +700,6 @@ class _AccountDetailPageState extends State<AccountDetailPage> {
             onPressed: () => Navigator.of(ctx).pop(true),
             child: const Text('Elimina'),
           ),
-          
         ],
       ),
     );

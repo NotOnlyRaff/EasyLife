@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@CrossOrigin(origins = "http://localhost:55869")
 @RestController
 @RequestMapping("/api/games")
 public class GameController {
@@ -35,7 +36,7 @@ public class GameController {
     }
 
     @GetMapping("/{id}")
-    public GameResponseDto getGameById(@PathVariable Long id) {
+    public GameResponseDto getGameById(@PathVariable("id") Long id) {
         Game game = gameService.getGameById(id);
         return toGameResponseDto(game);
     }
@@ -161,7 +162,7 @@ public class GameController {
        ========================= */
 
     @PutMapping("/{id}")
-    public GameResponseDto updateGame(@PathVariable Long id,
+    public GameResponseDto updateGame(@PathVariable("id") Long id,
                                       @RequestBody GameRequestDto request) {
 
         Game updatedGame = toGameEntityForUpdate(request);
@@ -174,7 +175,7 @@ public class GameController {
        ========================= */
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteGameById(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteGameById(@PathVariable("id") Long id) {
         gameService.deleteGameById(id);
         return ResponseEntity.noContent().build();
     }

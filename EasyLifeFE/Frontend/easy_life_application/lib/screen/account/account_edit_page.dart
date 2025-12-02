@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:easy_life_application/core/theme/app_pallete.dart';
+import 'package:easy_life_application/core/widgets/easylife_input_decoration.dart';
 import 'package:easy_life_application/models/account_model.dart';
 import 'package:easy_life_application/services/account/account_service.dart';
 
@@ -49,39 +50,6 @@ class _AccountEditPageState extends State<AccountEditPage> {
     _nationController.dispose();
     _descriptionController.dispose();
     super.dispose();
-  }
-
-  InputDecoration _fieldDecoration(
-    String label, {
-    String? hint,
-    Widget? suffixIcon,
-  }) {
-    return InputDecoration(
-      labelText: label,
-      hintText: hint,
-      filled: true,
-      fillColor: Colors.black.withOpacity(0.20),
-      suffixIcon: suffixIcon,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(
-          color: Colors.white.withOpacity(0.08),
-        ),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(
-          color: Colors.white.withOpacity(0.08),
-        ),
-      ),
-      focusedBorder: const OutlineInputBorder(
-        borderRadius: BorderRadius.all(Radius.circular(14)),
-        borderSide: BorderSide(
-          color: Pallete.accentBlue,
-          width: 1.6,
-        ),
-      ),
-    );
   }
 
   Future<void> _submit() async {
@@ -171,7 +139,7 @@ class _AccountEditPageState extends State<AccountEditPage> {
                         // EMAIL
                         TextFormField(
                           controller: _emailController,
-                          decoration: _fieldDecoration(
+                          decoration: easyLifeFieldDecoration(
                             'Email account',
                             hint: 'es. gamer@test.it',
                           ),
@@ -188,7 +156,7 @@ class _AccountEditPageState extends State<AccountEditPage> {
                         // PASSWORD
                         TextFormField(
                           controller: _passwordController,
-                          decoration: _fieldDecoration(
+                          decoration: easyLifeFieldDecoration(
                             'Password',
                             suffixIcon: IconButton(
                               icon: Icon(
@@ -218,7 +186,7 @@ class _AccountEditPageState extends State<AccountEditPage> {
                         // NATION
                         TextFormField(
                           controller: _nationController,
-                          decoration: _fieldDecoration(
+                          decoration: easyLifeFieldDecoration(
                             'Nazione',
                             hint: 'es. Italy, USA, Japan...',
                           ),
@@ -233,7 +201,7 @@ class _AccountEditPageState extends State<AccountEditPage> {
                         // STATUS
                         DropdownButtonFormField<AccountStatus>(
                           value: _selectedStatus,
-                          decoration: _fieldDecoration('Status'),
+                          decoration: easyLifeFieldDecoration('Status'),
                           items: const [
                             DropdownMenuItem(
                               value: AccountStatus.ACTIVE,
@@ -258,7 +226,7 @@ class _AccountEditPageState extends State<AccountEditPage> {
                         // DESCRIPTION
                         TextFormField(
                           controller: _descriptionController,
-                          decoration: _fieldDecoration(
+                          decoration: easyLifeFieldDecoration(
                             'Descrizione (opzionale)',
                             hint: 'Note, dettagli account, ecc...',
                           ),

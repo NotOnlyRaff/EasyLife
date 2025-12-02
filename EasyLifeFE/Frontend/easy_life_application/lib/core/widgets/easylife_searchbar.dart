@@ -60,7 +60,7 @@ class EasyLifeSearchBar extends StatelessWidget {
             suffixIcon: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 4.0),
               child: _RoundIconButton(
-                icon: Icons.account_circle,
+                icon: Icons.arrow_forward,
                 tooltip: 'Aggiungi account',
                 onTap: onAddPressed,
               ),

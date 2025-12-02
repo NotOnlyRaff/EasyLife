@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:easy_life_application/models/account_suggestion.dart';
 import 'package:http/http.dart' as http;
 import 'package:easy_life_application/config/api_config.dart';
 import 'package:easy_life_application/models/account_model.dart';
@@ -61,6 +62,24 @@ class AccountService {
     throw Exception(
       'Errore durante la ricerca account: ${response.statusCode} ${response.body}',
     );
+  }
+
+  /// Backend: GET /accounts/search?q=prefix
+  Future<List<AccountSuggestion>> searchAccounts(String query) async {
+    if (query.trim().isEmpty) return [];
+
+    final response = await _client.get(
+      Uri.parse('${ApiConfig.baseUrl}/accounts/search/email?q=$query'),
+    );
+
+    final data = json.decode(response.body) as List<dynamic>;
+    return data
+        .map(
+          (e) => AccountSuggestion.fromMap(
+            e as Map<String, dynamic>,
+          ),
+        )
+        .toList();
   }
 
   /// ➕ Crea un nuovo account.

@@ -1,9 +1,7 @@
-
 import 'dart:math';
 import 'package:flutter/material.dart';
 
 class EasyLifeRadialMenu extends StatefulWidget {
-  /// Callback: quando clicchi un'icona ti passo l'indice:
   /// 0 = Games, 1 = Subs, 2 = Accounts, 3 = Users, 4 = Purchases
   final void Function(int index) onItemSelected;
 
@@ -18,14 +16,21 @@ class EasyLifeRadialMenu extends StatefulWidget {
 
 class _EasyLifeRadialMenuState extends State<EasyLifeRadialMenu> {
   bool _isOpen = false;
-  final double _radius = 120; // distanza dal centro
+
+  // distanza dal centro per le icone
+  final double _radius = 125;
 
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
 
-    // Mettiamo il timone verso il basso (tipo dock)
-    final Offset center = Offset(size.width / 2, size.height * 0.75);
+    // 🎯 Centro del menu: molto vicino al fondo ma sopra la safe area
+    const double fabRadius = 30;
+    const double bottomPadding = 32;
+    final Offset center = Offset(
+      size.width / 2,
+      size.height - bottomPadding - fabRadius,
+    );
 
     // Definiamo le voci del menu
     final items = <_RadialItem>[
@@ -58,21 +63,25 @@ class _EasyLifeRadialMenuState extends State<EasyLifeRadialMenu> {
 
     return Stack(
       children: [
-        // 🔘 Bottone centrale (timone)
+        // 🔘 Bottone centrale (timone) – fissato in basso
         Positioned(
-          left: center.dx - 30,
-          top: center.dy - 30,
+          left: center.dx - fabRadius,
+          top: center.dy - fabRadius,
           child: FloatingActionButton(
             onPressed: () {
               setState(() {
                 _isOpen = !_isOpen;
               });
             },
-            child: const Icon(Icons.sports_esports, size: 32,), // qui in futuro ci metti il timone custom
+            elevation: 6,
+            child: const Icon(
+              Icons.sports_esports,
+              size: 32,
+            ),
           ),
         ),
 
-        // ▶️ Icone radiali
+        // ▶️ Icone radiali (a ventaglio verso l'alto)
         ..._buildRadialItems(center, items),
       ],
     );
@@ -82,29 +91,38 @@ class _EasyLifeRadialMenuState extends State<EasyLifeRadialMenu> {
     final List<Widget> widgets = [];
     final int n = items.length;
 
+    // 🔥 invece di 360°, le distribuiamo in un ARCO verso l’alto
+    // centro a -90° (in alto), ventaglio -150° → -30°
+    const double startAngle = -8 * pi / 9; // -150°
+    const double endAngle = -pi / 9;       // -30°
+    final double step = (endAngle - startAngle) / (n - 1);
+
     for (int i = 0; i < n; i++) {
-      final angle = (2 * pi / n) * i; // distribuite a 360°
-      final double dx = center.dx + (_isOpen ? _radius * cos(angle) : 0);
-      final double dy = center.dy + (_isOpen ? _radius * sin(angle) : 0);
+      final double angle = startAngle + step * i;
+
+      final double targetDx = center.dx + _radius * cos(angle);
+      final double targetDy = center.dy + _radius * sin(angle);
 
       widgets.add(
         AnimatedPositioned(
           duration: const Duration(milliseconds: 250),
-          left: dx - 24,
-          top: dy - 24,
-          child: Opacity(
-            opacity: _isOpen ? 1 : 0,
-            child: IconButton(
-              icon: Icon(items[i].icon),
-              onPressed: _isOpen
-                  ? () {
-                      items[i].onTap();
-                      // opzionale: chiudi menu dopo il tap
-                      setState(() {
-                        _isOpen = false;
-                      });
-                    }
-                  : null,
+          curve: Curves.easeOutQuad,
+          left: (_isOpen ? targetDx : center.dx) - 28,
+          top: (_isOpen ? targetDy : center.dy) - 28,
+          child: IgnorePointer(
+            ignoring: !_isOpen, // quando chiuso, non intercetta i tap
+            child: AnimatedOpacity(
+              duration: const Duration(milliseconds: 200),
+              opacity: _isOpen ? 1 : 0,
+              child: _RadialActionButton(
+                icon: items[i].icon,
+                onTap: () {
+                  items[i].onTap();
+                  setState(() {
+                    _isOpen = false;
+                  });
+                },
+              ),
             ),
           ),
         ),
@@ -125,4 +143,51 @@ class _RadialItem {
     required this.label,
     required this.onTap,
   });
+}
+
+/// 🔘 Pulsante circolare custom, hitbox grande e tappabile DAPPERTUTTO
+class _RadialActionButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _RadialActionButton({
+    required this.icon,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        // tutta la circonferenza è tappabile
+        onTap: onTap,
+        customBorder: const CircleBorder(),
+        child: Container(
+          width: 56,
+          height: 56,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.black.withOpacity(0.50),
+            border: Border.all(
+              color: Colors.white.withOpacity(0.20),
+              width: 1.2,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.7),
+                blurRadius: 16,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Icon(
+            icon,
+            size: 24,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
+  }
 }

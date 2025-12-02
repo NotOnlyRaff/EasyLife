@@ -5,6 +5,9 @@ import 'package:easy_life_application/core/widgets/easylife_searchbar.dart';
 import 'package:easy_life_application/models/account_model.dart';
 import 'package:easy_life_application/screen/account/account_create_page.dart';
 import 'package:easy_life_application/screen/account/account_detail_page.dart';
+import 'package:easy_life_application/screen/game/game_home_page.dart';
+import 'package:easy_life_application/screen/subscription/subscription_home_page.dart';
+import 'package:easy_life_application/screen/users/users_home_page.dart';
 import 'package:easy_life_application/services/account/account_service.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_life_application/screen/account/account_home_page.dart';
@@ -143,13 +146,13 @@ class _HomePageState extends State<HomePage> {
   Widget _buildTabBody() {
     switch (_selectedIndex) {
       case 0:
-        return const Center(child: Text('Games (TODO)'));
+        return const GameHomePage();
       case 1:
-        return const Center(child: Text('Subscriptions (TODO)'));
+        return const SubscriptionHomePage();
       case 2:
         return const AccountHomePage();
       case 3:
-        return const Center(child: Text('Users (TODO)'));
+        return const UsersHomePage();
       case 4:
         return const Center(child: Text('Purchases (TODO)'));
       default:

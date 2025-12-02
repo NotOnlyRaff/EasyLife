@@ -1,11 +1,14 @@
 package com.easylife.DTO.account;
 
+import com.easylife.model.AccountStatus;
+
 public class AccountRequestDto {
 
     private String email;
     private String password;
     private String nation;
     private String description;
+    private AccountStatus accountStatus; // enum → esposto come stringa
 
     public AccountRequestDto() {
     }
@@ -24,5 +27,9 @@ public class AccountRequestDto {
 
     public String getDescription() {
         return description;
+    }
+
+    public AccountStatus getAccountStatus() {
+        return accountStatus;
     }
 }

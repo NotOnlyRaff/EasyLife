@@ -35,7 +35,7 @@ public class SubscriptionController {
     }
 
     @GetMapping("/{id}")
-    public SubscriptionResponseDto getSubscriptionById(@PathVariable Long id) {
+    public SubscriptionResponseDto getSubscriptionById(@PathVariable("id") Long id) {
         Subscription sub = subscriptionService.getSubscriptionById(id);
         return toResponseDto(sub);
     }
@@ -175,7 +175,7 @@ public class SubscriptionController {
        ========================= */
 
     @PutMapping("/{id}")
-    public SubscriptionResponseDto updateSubscription(@PathVariable Long id,
+    public SubscriptionResponseDto updateSubscription(@PathVariable("id") Long id,
                                                       @RequestBody SubscriptionRequestDto request) {
 
         Subscription updated = toEntityForUpdate(request);
@@ -190,7 +190,7 @@ public class SubscriptionController {
        ========================= */
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSubscription(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteSubscription(@PathVariable("id") Long id) {
         subscriptionService.deleteSubscription(id);
         return ResponseEntity.noContent().build();
     }

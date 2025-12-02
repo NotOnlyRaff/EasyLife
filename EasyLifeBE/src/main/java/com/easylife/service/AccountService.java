@@ -1,5 +1,6 @@
 package com.easylife.service;
 
+import com.easylife.DTO.account.AccountResponseDto;
 import com.easylife.config.exception.BusinessException;
 import com.easylife.config.exception.ResourceNotFoundException;
 import com.easylife.model.Account;
@@ -12,6 +13,7 @@ import com.easylife.repository.AccountRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 
 
@@ -107,6 +109,7 @@ public class AccountService {
         existing.setPassword(updatedAccount.getPassword());
         existing.setNation(updatedAccount.getNation());
         existing.setDescription(updatedAccount.getDescription());
+        existing.setAccountStatus(updatedAccount.getAccountStatus());
 
         // Non tocco createdAt, rimane la data di creazione originale
 
@@ -160,4 +163,10 @@ public class AccountService {
     public List<Account> getAccountsWithPurchases() {
         return accountRepository.findByPurchasesIsNotEmpty();
     }
+
+    public List<Account> searchByEmail(String text) {
+        return accountRepository.findByEmailContainingIgnoreCase(text);
+    }
+
+    
 }

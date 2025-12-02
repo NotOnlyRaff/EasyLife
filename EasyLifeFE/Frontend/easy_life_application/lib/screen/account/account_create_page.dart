@@ -5,6 +5,7 @@ import 'package:easy_life_application/services/account/account_service.dart'
 import 'package:flutter/material.dart';
 import 'package:easy_life_application/models/account_model.dart';
 import 'package:easy_life_application/core/theme/app_pallete.dart';
+import 'package:easy_life_application/core/widgets/easylife_input_decoration.dart';
 
 class AccountCreatePage extends StatefulWidget {
   final String initialEmail;
@@ -72,39 +73,6 @@ class _AccountCreatePageState extends State<AccountCreatePage> {
     }
   }
 
-  InputDecoration _fieldDecoration(
-    String label, {
-    String? hint,
-    Widget? suffixIcon,
-  }) {
-    return InputDecoration(
-      labelText: label,
-      hintText: hint,
-      filled: true,
-      fillColor: Colors.black.withOpacity(0.20),
-      suffixIcon: suffixIcon,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(
-          color: Colors.white.withOpacity(0.08),
-        ),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(
-          color: Colors.white.withOpacity(0.08),
-        ),
-      ),
-      focusedBorder: const OutlineInputBorder(
-        borderRadius: BorderRadius.all(Radius.circular(14)),
-        borderSide: BorderSide(
-          color: Pallete.accentBlue,
-          width: 1.6,
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final media = MediaQuery.of(context);
@@ -162,7 +130,7 @@ class _AccountCreatePageState extends State<AccountCreatePage> {
                         // EMAIL
                         TextFormField(
                           controller: _emailController,
-                          decoration: _fieldDecoration(
+                          decoration: easyLifeFieldDecoration(
                             'Email account',
                             hint: 'es. gamer@test.it',
                           ),
@@ -179,7 +147,7 @@ class _AccountCreatePageState extends State<AccountCreatePage> {
                         // PASSWORD
                         TextFormField(
                           controller: _passwordController,
-                          decoration: _fieldDecoration(
+                          decoration: easyLifeFieldDecoration(
                             'Password',
                             suffixIcon: IconButton(
                               icon: Icon(
@@ -209,7 +177,7 @@ class _AccountCreatePageState extends State<AccountCreatePage> {
                         // NATION
                         TextFormField(
                           controller: _nationController,
-                          decoration: _fieldDecoration(
+                          decoration: easyLifeFieldDecoration(
                             'Nazione',
                             hint: 'es. Italy, USA, Japan...',
                           ),
@@ -224,7 +192,7 @@ class _AccountCreatePageState extends State<AccountCreatePage> {
                         // DESCRIPTION
                         TextFormField(
                           controller: _descriptionController,
-                          decoration: _fieldDecoration(
+                          decoration: easyLifeFieldDecoration(
                             'Descrizione (opzionale)',
                             hint: 'Note, dettagli account, ecc...',
                           ),

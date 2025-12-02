@@ -15,6 +15,8 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     // Trova tutti gli account con una descrizione che contiene una certa parola
     List<Account> findByDescriptionContaining(String description);
 
+    List<Account> findByEmailContainingIgnoreCase(String email);
+
     // Trova tutti gli account per nazione
     List<Account> findByNation(String nation);
 

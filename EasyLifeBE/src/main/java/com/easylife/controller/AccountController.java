@@ -42,7 +42,7 @@ public class AccountController {
     }
 
     @GetMapping("/{id}")
-    public AccountResponseDto getAccountById(@PathVariable Long id) {
+    public AccountResponseDto getAccountById(@PathVariable("id") Long id) {
         Account account = accountService.getAccountById(id);
         return toAccountResponseDto(account);
     }
@@ -54,6 +54,14 @@ public class AccountController {
             throw new ResourceNotFoundException("Account not found with email: " + email);
         }
         return toAccountResponseDto(account);
+    }
+
+    @GetMapping("/search/email")
+    public List<AccountResponseDto> searchByEmail(@RequestParam("q") String email) {
+        return accountService.searchByEmail(email)
+                .stream()
+                .map(this::toAccountResponseDto)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/search/description")
@@ -134,8 +142,7 @@ public class AccountController {
         account.setEmail(request.getEmail());
         account.setPassword(request.getPassword());
         account.setNation(request.getNation());
-        account.setDescription(request.getDescription());
-        // createdAt e status li sistemiamo nel service
+        account.setDescription(request.getDescription());       // createdAt e status li sistemiamo nel service
 
         Account created = accountService.createAccount(account);
 
@@ -155,8 +162,8 @@ public class AccountController {
         Account updated = new Account();
         updated.setPassword(request.getPassword());
         updated.setNation(request.getNation());
-        updated.setDescription(request.getDescription());
-        // niente cambio email da qui, coerente con AccountService
+        updated.setDescription(request.getDescription());        // niente cambio email da qui, coerente con AccountService
+        updated.setAccountStatus(request.getAccountStatus());        // niente cambio email da qui, coerente con AccountService
 
         Account result = accountService.updateAccount(id, updated);
         return toAccountResponseDto(result);
