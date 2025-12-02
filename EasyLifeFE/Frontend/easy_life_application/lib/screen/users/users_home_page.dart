@@ -1,8 +1,9 @@
+import 'package:easy_life_application/screen/users/users_detail_page.dart';
+import 'package:easy_life_application/screen/users/user_create_page.dart'; // 👈 IMPORT CREATE PAGE
 import 'package:flutter/material.dart';
 import 'package:easy_life_application/core/theme/app_pallete.dart';
 import 'package:easy_life_application/models/users_model.dart';
 import 'package:easy_life_application/services/users/users_service.dart';
-// import 'package:easy_life_application/screen/users/user_detail_page.dart'; // quando la creeremo
 
 class UsersHomePage extends StatefulWidget {
   const UsersHomePage({super.key});
@@ -74,6 +75,26 @@ class _UsersHomePageState extends State<UsersHomePage> {
     return (f + s).toUpperCase();
   }
 
+  // 👇 handler per il tasto Add Profile
+  Future<void> _onAddProfilePressed() async {
+    final created = await Navigator.of(context).push<UsersModel?>(
+      MaterialPageRoute(builder: (_) => const UserCreatePage()),
+    );
+
+    if (created != null) {
+      // aggiorno lista locale senza ricaricare tutto
+      setState(() {
+        _allUsers.insert(0, created);
+        _applyFilter(_searchController.text);
+      });
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Profilo utente creato.')));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final media = MediaQuery.of(context);
@@ -114,11 +135,13 @@ class _UsersHomePageState extends State<UsersHomePage> {
           ),
         ),
       ),
-      // volendo in futuro un FAB per creare user
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {},
-      //   child: const Icon(Icons.person_add),
-      // ),
+      floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'addProfile',
+        onPressed: _onAddProfilePressed,
+        icon: const Icon(Icons.person_add),
+        label: const Text('Add profile'),
+        backgroundColor: Pallete.accentBlue,
+      ),
     );
   }
 
@@ -133,16 +156,16 @@ class _UsersHomePageState extends State<UsersHomePage> {
             Text(
               'Utenti',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 4),
             Text(
               'Gestisci gli utenti collegati ai tuoi acquisti.',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.white70,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: Colors.white70),
             ),
           ],
         ),
@@ -163,22 +186,15 @@ class _UsersHomePageState extends State<UsersHomePage> {
           prefixIcon: const Icon(Icons.search, color: Colors.white70),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide(
-              color: Colors.white.withOpacity(0.08),
-            ),
+            borderSide: BorderSide(color: Colors.white.withOpacity(0.08)),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide(
-              color: Colors.white.withOpacity(0.08),
-            ),
+            borderSide: BorderSide(color: Colors.white.withOpacity(0.08)),
           ),
           focusedBorder: const OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(16)),
-            borderSide: BorderSide(
-              color: Pallete.accentBlue,
-              width: 1.6,
-            ),
+            borderSide: BorderSide(color: Pallete.accentBlue, width: 1.6),
           ),
         ),
         style: const TextStyle(color: Colors.white),
@@ -188,9 +204,7 @@ class _UsersHomePageState extends State<UsersHomePage> {
 
   Widget _buildBody() {
     if (_isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
+      return const Center(child: CircularProgressIndicator());
     }
 
     if (_error != null) {
@@ -232,21 +246,16 @@ class _UsersHomePageState extends State<UsersHomePage> {
     return InkWell(
       borderRadius: BorderRadius.circular(16),
       onTap: () {
-        // quando farai la pagina dettaglio:
-        // Navigator.of(context).push(
-        //   MaterialPageRoute(
-        //     builder: (_) => UserDetailPage(user: user),
-        //   ),
-        // );
+        Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (_) => UserDetailPage(user: user)));
       },
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: Colors.white.withOpacity(0.06),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: Colors.white.withOpacity(0.10),
-          ),
+          border: Border.all(color: Colors.white.withOpacity(0.10)),
         ),
         child: Row(
           children: [
@@ -296,10 +305,7 @@ class _UsersHomePageState extends State<UsersHomePage> {
               ),
             ),
             const SizedBox(width: 8),
-            Icon(
-              Icons.chevron_right,
-              color: Colors.white.withOpacity(0.7),
-            ),
+            Icon(Icons.chevron_right, color: Colors.white.withOpacity(0.7)),
           ],
         ),
       ),

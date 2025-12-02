@@ -24,4 +24,27 @@ class UsersService {
         .map((e) => UsersModel.fromMap(e as Map<String, dynamic>))
         .toList();
   }
+
+  Future<UsersModel> createUser({
+    required String firstName,
+    required String surname,
+  }) async {
+    final uri = Uri.parse('${ApiConfig.baseUrl}/users');
+
+    final response = await _client.post(
+      uri,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({'firstName': firstName, 'surname': surname}),
+    );
+
+    if (response.statusCode != 201 && response.statusCode != 200) {
+      throw Exception(
+        'Errore creazione utente: '
+        '${response.statusCode} - ${response.body}',
+      );
+    }
+
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    return UsersModel.fromMap(data);
+  }
 }

@@ -6,6 +6,7 @@ import 'package:easy_life_application/models/account_model.dart';
 import 'package:easy_life_application/screen/account/account_create_page.dart';
 import 'package:easy_life_application/screen/account/account_detail_page.dart';
 import 'package:easy_life_application/screen/game/game_home_page.dart';
+import 'package:easy_life_application/screen/purchase/purchase_home_page.dart';
 import 'package:easy_life_application/screen/subscription/subscription_home_page.dart';
 import 'package:easy_life_application/screen/users/users_home_page.dart';
 import 'package:easy_life_application/services/account/account_service.dart';
@@ -154,7 +155,7 @@ class _HomePageState extends State<HomePage> {
       case 3:
         return const UsersHomePage();
       case 4:
-        return const Center(child: Text('Purchases (TODO)'));
+        return const PurchaseHomePage();
       default:
         return const SizedBox.shrink();
     }
